@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotionClone - 工作空间与权限管理原型</title>
+    <!-- Ant Design CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f2f5;
+        }
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .prototype-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .prototype-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        .prototype-subtitle {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .prototype-section {
+            margin-bottom: 60px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            color: #1890ff;
+        }
+        .prototype-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .prototype-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .prototype-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+        .card-header {
+            padding: 16px 20px;
+            background-color: #fafafa;
+            border-bottom: 1px solid #e8e8e8;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .card-body {
+            padding: 20px;
+            flex-grow: 1;
+        }
+        .prototype-img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .prototype-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #40a9ff;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e8e8e8;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+        .tab.active {
+            border-bottom: 2px solid #1890ff;
+            color: #1890ff;
+        }
+        img {
+            max-width: 100%;
+        }
+        /* 原型界面特定样式 */
+        .prototype {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .prototype-content {
+            padding: 20px;
+        }
+        .prototype-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1890ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="prototype-header">
+            <div class="prototype-title">NotionClone 原型设计</div>
+            <div class="prototype-subtitle">工作空间管理、分区管理与团队协作权限系统</div>
+        </div>
+
+        <div id="prototypes-content">
+            <!-- 原型界面将在这里动态生成 -->
+        </div>
+    </div>
+
+    <!-- React and Ant Design JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+
+    <script type="text/babel">
+        // 产品功能定义
+        const productFeatures = {
+            workspaceManagement: {
+                title: "工作空间管理",
+                description: "允许用户创建和管理独立的工作空间，每个工作空间可包含不同的内容和成员。",
+                subFeatures: [
+                    {
+                        name: "创建工作空间",
+                        description: "用户可以创建新的工作空间，设置名称、图标和描述。",
+                    },
+                    {
+                        name: "工作空间设置",
+                        description: "管理工作空间的基本信息、域名设置、计费和高级功能。",
+                    },
+                    {
+                        name: "工作空间切换",
+                        description: "在不同工作空间之间快速切换，并查看最近访问的工作空间。",
+                    },
+                    {
+                        name: "工作空间模板",
+                        description: "从预设模板快速创建特定用途的工作空间。",
+                    }
+                ]
+            },
+            privateSpaceManagement: {
+                title: "私人分区管理",
+                description: "每个用户在工作空间内都有自己的私人区域，可以创建只有自己可见的内容。",
+                subFeatures: [
+                    {
+                        name: "私人页面创建",
+                        description: "在私人分区创建仅自己可访问的页面和文档。",
+                    },
+                    {
+                        name: "私人内容组织",
+                        description: "对私人内容进行分类、标记和组织。",
+                    },
+                    {
+                        name: "私人收藏夹",
+                        description: "将常用页面添加到收藏夹，快速访问重要内容。",
+                    },
+                    {
+                        name: "私人内容共享",
+                        description: "将私人内容选择性地共享给工作空间中的其他成员。",
+                    }
+                ]
+            },
+            teamCollaboration: {
+                title: "团队协作区管理",
+                description: "工作空间中可以创建多个团队协作区，不同团队成员可以在这些区域中共同协作。",
+                subFeatures: [
+                    {
+                        name: "团队空间创建",
+                        description: "创建面向特定团队或项目的协作空间。",
+                    },
+                    {
+                        name: "团队成员管理",
+                        description: "添加、移除团队成员并设置各自的角色权限。",
+                    },
+                    {
+                        name: "团队内容组织",
+                        description: "组织团队页面结构，创建层级关系和目录。",
+                    },
+                    {
+                        name: "团队活动追踪",
+                        description: "查看团队空间内的最新活动和更新。",
+                    }
+                ]
+            },
+            permissionManagement: {
+                title: "权限管理功能",
+                description: "细粒度的权限控制系统，可以在工作空间、团队和页面级别设置不同的访问权限。",
+                subFeatures: [
+                    {
+                        name: "用户角色设置",
+                        description: "为工作空间成员分配管理员、成员、访客等不同角色。",
+                    },
+                    {
+                        name: "页面权限设置",
+                        description: "控制特定页面的访问、编辑、评论和分享权限。",
+                    },
+                    {
+                        name: "团队权限设置",
+                        description: "管理团队空间的成员访问权限和角色。",
+                    },
+                    {
+                        name: "权限模板",
+                        description: "创建和应用权限模板，批量设置相似内容的权限。",
+                    }
+                ]
+            }
+        };
+
+        // 原型界面定义
+        const prototypeInterfaces = [
+            // 工作空间管理界面
+            {
+                id: "workspace-list",
+                title: "工作空间列表",
+                category: "workspaceManagement",
+                description: "展示用户所有的工作空间，支持创建新工作空间和切换工作空间。",
+                render: () => (
+                    <div className="prototype">
+                        <div className="prototype-label">工作空间列表界面</div>
+                        <div className="prototype-content">
+                            <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                                    <h2 style={{ margin: 0 }}>我的工作空间</h2>
+                                    <button className="btn">
+                                        <i className="fas fa-plus" style={{ marginRight: "5px" }}></i>
+                                        创建工作空间
+                                    </button>
+                                </div>
+                                
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: "16px" }}>
+                                    {/* 工作空间卡片 */}
+                                    {["市场部项目", "产品开发", "个人空间", "客户管理"].map((name, index) => (
+                                        <div key={index} style={{ 
+                                            border: "1px solid #e8e8e8", 
+                                            borderRadius: "8px", 
+                                            overflow: "hidden",
+                                            transition: "all 0.3s",
+                                            cursor: "pointer",
+                                            backgroundColor: "white"
+                                        }}>
+                                            <div style={{ 
+                                                height: "140px", 
+                                                backgroundColor: index % 4 === 0 ? "#7356BF" : 
+                                                                 index % 4 === 1 ? "#2EAADC" : 
+                                                                 index % 4 === 2 ? "#F2994A" : "#219653",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                color: "white",
+                                                fontSize: "36px"
+                                            }}>
+                                                <i className={
+                                                    index % 4 === 0 ? "fas fa-chart-line" : 
+                                                    index % 4 === 1 ? "fas fa-code" : 
+                                                    index % 4 === 2 ? "fas fa-user" : "fas fa-users"
+                                                }></i>
+                                            </div>
+                                            <div style={{ padding: "16px" }}>
+                                                <div style={{ fontWeight: "bold", marginBottom: "8px" }}>{name}</div>
+                                                <div style={{ fontSize: "13px", color: "#666" }}>
+                                                    上次访问: {index === 0 ? "刚刚" : index === 1 ? "昨天" : `${index + 1} 天前`}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    
+                                    {/* 创建新工作空间卡片 */}
+                                    <div style={{ 
+                                        border: "1px dashed #bfbfbf", 
+                                        borderRadius: "8px", 
+                                        display: "flex", 
+                                        flexDirection: "column",
+                                        justifyContent: "center", 
+                                        alignItems: "center",
+                                        minHeight: "220px",
+                                        cursor: "pointer",
+                                        backgroundColor: "#fafafa"
+                                    }}>
+                                        <div style={{ 
+                                            width: "50px", 
+                                            height: "50px", 
+                                            borderRadius: "50%", 
+                                            backgroundColor: "#f0f0f0",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            marginBottom: "12px"
+                                        }}>
+                                            <i className="fas fa-plus" style={{ color: "#1890ff" }}></i>
+                                        </div>
+                                        <div style={{ color: "#595959" }}>创建新工作空间</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            },
+            {
+                id: "create-workspace",
+                title: "创建工作空间",
+                category: "workspaceManagement",
+                description: "创建新工作空间的表单界面，设置工作空间名称、图标和基本信息。",
+                render: () => (
+                    <div className="prototype">
+                        <div className="prototype-label">创建工作空间界面</div>
+                        <div className="prototype-content">
+                            <div style={{ maxWidth: "500px", margin: "0 auto", backgroundColor: "white", padding: "30px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+                                <h2 style={{ textAlign: "center", marginBottom: "30px" }}>创建新工作空间</h2>
+                                
+                                <div style={{ marginBottom: "20px" }}>
+                                    <div style={{ marginBottom: "8px", fontWeight: "bold" }}>工作空间图标</div>
+                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                        <div style={{ 
+                                            width: "60px", 
+                                            height: "60px", 
+                                            backgroundColor: "#1890ff", 
+                                            borderRadius: "8px",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            color: "white",
+                                            fontSize: "24px",
+                                            marginRight: "16px"
+                                        }}>
+                                            <i className="fas fa-briefcase"></i>
+                                        </div>
+                                        <button style={{ 
+                                            padding: "8px 16px", 
+                                            border: "1px solid #d9d9d9", 
+                                            borderRadius: "4px",
+                                            backgroundColor: "white",
+                                            cursor: "pointer"
+                                        }}>
+                                            更换图标
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div style={{ marginBottom: "20px" }}>
+                                    <div style={{ marginBottom: "8px", fontWeight: "bold" }}>工作空间名称</div>
+                                    <input type="text" 
+                                        placeholder="例如：市场部、产品团队..." 
+                                        style={{ 
+                                            width: "100%", 
+                                            padding: "10px 12px", 
+                                            border: "1px solid #d9d9d9",
+                                            borderRadius: "4px",
+                                            fontSize: "14px"
+                                        }} 
+                                    />
+                                </div>
+                                
+                                <div style={{ marginBottom: "30px" }}>
+                                    <div style={{ marginBottom: "8px", fontWeight: "bold" }}>工作空间描述 (可选)</div>
+                                    <textarea 
+                                        placeholder="简要描述该工作空间的用途..." 
+                                        style={{ 
+                                            width: "100%", 
+                                            padding: "10px 12px", 
+                                            border: "1px solid #d9d9d9",
+                                            borderRadius: "4px",
+                                            fontSize: "14px",
+                                            minHeight: "80px",
+                                            resize: "vertical"
+                                        }} 
+                                    />
+                                </div>
+                                
+                                <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                                    <button style={{ 
+                                        padding: "10px 16px", 
+                                        border: "1px solid #d9d9d9", 
+                                        borderRadius: "4px",
+                                        backgroundColor: "white",
+                                        cursor: "pointer"
+                                    }}>
+                                        取消
+                                    </button>
+                                    <button className="btn" style={{ padding: "10px 24px" }}>
+                                        创建工作空间
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            },
+            {
+                id: "workspace-settings",
+                title: "工作空间设置",
+                category: "workspaceManagement",
+                description: "管理工作空间的基本设置，包括名称、图标、域名和高级功能。",
+                render: () => (
+                    <div className="prototype">
+                        <div className="prototype-label">工作空间设置界面</div>
+                        <div className="prototype-content">
+                            <div style={{ maxWidth: "900px", margin: "0 auto", backgroundColor: "white", padding: "0", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", overflow: "hidden" }}>
+                                <div style={{ display: "flex", height: "100%" }}>
+                                    {/* 侧边栏 */}
+                                    <div style={{ width: "200px", borderRight: "1px solid #f0f0f0", padding: "20px 0" }}>
+                                        <div style={{ padding: "10px 20px", fontWeight: "bold", fontSize: "16px", borderBottom: "1px solid #f0f0f0", marginBottom: "10px" }}>
+                                            工作空间设置
+                                        </div>
+                                        {["常规设置", "成员与团队", "权限设置", "域名设置", "集成管理", "计费与订阅"].map((item, index) => (
+                                            <div key={index} style={{ 
+                                                padding: "10px 20px", 
+                                                cursor: "pointer",
+                                                backgroundColor: index === 0 ? "#f0f7ff" : "transparent",
+                                                borderLeft: index === 0 ? "3px solid #1890ff" : "3px solid transparent",
+                                                color: index === 0 ? "#1890ff" : "#333"
+                                            }}>
+                                                {item}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    {/* 主内容区 */}
+                                    <div style={{ flex: 1, padding: "30px" }}>
+                                        <h2 style={{ marginTop: 0, marginBottom: "20px" }}>常规设置</h2>
+                                        
+                                        <div style={{ marginBottom: "30px" }}>
+                                            <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+                                                <div style={{ 
+                                                    width: "60px", 
+                                                    height: "60px", 
+                                                    backgroundColor: "#7356BF", 
+                                                    borderRadius: "8px",
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    color: "white",
+                                                    fontSize: "24px",
+                                                    marginRight: "16px"
+                                                }}>
+                                                    <i className="fas fa-chart-line"></i>
+                                                </div>
+                                                <div>
+                                                    <div style={{ fontWeight: "bold", marginBottom: "5px" }}>市场部项目</div>
+                                                    <button style={{ 
+                                                        padding: "6px 12px", 
+                                                        border: "1px solid #d9d9d9", 
+                                                        borderRadius: "4px",
+                                                        backgroundColor: "white",
+                                                        cursor: "pointer",
+                                                        fontSize: "12px"
+                                                    }}>
+                                                        更改图标
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div style={{ marginBottom: "20px" }}>
+                                                <div style={{ marginBottom: "8px", fontWeight: "bold" }}>工作空间名称</div>
+                                                <input type="text" 
+                                                    value="市场部项目"
+                                                    style={{ 
+                                                        width: "100%", 
+                                                        padding: "10px 12px", 
+                                                        border: "1px solid #d9d9d9",
+                                                        borderRadius: "4px",
+                                                        fontSize: "14px"
+                                                    }} 
+                                                />
+                                            </div>
+                                            
+                                            <div style={{ marginBottom: "20px" }}>
+                                                <div style={{ marginBottom: "8px", fontWeight: "bold" }}>工作空间描述</div>
+                                                <textarea 
+                                                    value="市场部的所有项目计划、执行和资源管理..."
+                                                    style={{ 
+                                                        width: "100%", 
+                                                        padding: "10px 12px", 
+                                                        border: "1px solid #d9d9d9",
+                                                        borderRadius: "4px",
+                                                        fontSize: "14px",
+                                                        minHeight: "80px",
+                                                        resize: "vertical"
+                                                    }} 
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: "20px" }}>
+                                            <h3>危险操作</h3>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "15px" }}>
+                                                <div>
+                                                    <div style={{ fontWeight: "bold", marginBottom: "5px" }}>删除工作空间</div>
+                                                    <div style={{ fontSize: "13px", color: "#666" }}>
+                                                        此操作将永久删除整个工作空间及其所有内容，无法恢复。
+                                                    </div>
+                                                </div>
+                                                <button style={{ 
+                                                    padding: "8px 16px", 
+                                                    border: "1px solid #ff4d4f", 
+                                                    borderRadius: "4px",
+                                                    backgroundColor: "white",
+                                                    color: "#ff4d4f",
+                                                    cursor: "pointer"
+                                                }}>
+                                                    删除工作空间
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            },
+            // 私人分区管理界面
+            {
+                id: "private-space",
+                title: "私人分区",
+                category: "privateSpaceManagement",
+                description: "用户的私人分区，展示只有自己可见的内容和页面。",
+                render: () => (
+                    <div className="prototype">
+                        <div className="prototype-label">私人分区界面</div>
+                        <div className="prototype-content">
+                            <div style={{ display: "flex", height: "600px", backgroundColor: "white", borderRadius: "8px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+                                {/* 侧边导航 */}
+                                <div style={{ width: "250px", borderRight: "1px solid #f0f0f0", display: "flex", flexDirection: "column" }}>
+                                    {/* 工作空间切换 */}
+                                    <div style={{ padding: "15px", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center" }}>
+                                        <div style={{ 
+                                            width: "32px", 
+                                            height: "32px", 
+                                            backgroundColor: "#7356BF", 
+                                            borderRadius: "6px",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            color: "white",
+                                            fontSize: "16px",
+                                            marginRight: "10px"
+                                        }}>
+                                            <i className="fas fa-chart-line"></i>
+                                        </div>
+                                        <div style={{ fontWeight: "bold" }}>市场部项目</div>
+                                        <i className="fas fa-chevron-down" style={{ marginLeft: "auto", color: "#999" }}></i>
+                                    </div>
+                                    
+                                    {/* 搜索框 */}
+                                    <div style={{ padding: "10px 15px", borderBottom: "1px solid #f0f0f0" }}>
+                                        <div style={{ 
+                                            display: "flex", 
+                                            alignItems: "center", 
+                                            backgroundColor: "#f5f5f5", 
+                                            borderRadius: "4px", 
+                                            padding: "6px 10px" 
+                                        }}>
+                                            <i className="fas fa-search" style={{ color: "#999", marginRight: "8px" }}></i>
+                                            <span style={{ color: "#999", fontSize: "13px" }}>搜索...</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* 导航项 */}
+                                    <div style={{ flex: 1, overflowY: "auto", padding: "5px 0" }}>
+                                        <div style={{ padding: "12px 15px 8px", fontSize: "12px", color: "#999" }}>
+                                            工作区
+                                        </div>
+                                        
+                                        {/* 导航项列表 */}
+                                        {[
+                                            { icon: "fas fa-inbox", name: "收件箱", highlight: false },
+                                            { icon: "fas fa-file-alt", name: "我的文档", highlight: true },
+                                            { icon: "fas fa-tasks", name: "任务", highlight: false },
+                                            { icon: "fas fa-bookmark", name: "收藏", highlight: false },
+                                        ].map((item, index) => (
+                                            <div key={index} style={{ 
+                                                padding: "8px 15px", 
+                                                display: "flex", 
+                                                alignItems: "center", 
+                                                cursor: "pointer",
+                                                backgroundColor: item.highlight ? "#f0f7ff" : "transparent",
+                                                color: item.highlight ? "#1890ff" : "#333"
+                                            }}>
+                                                <i className={item.icon} style={{ width: "20px", marginRight: "8px" }}></i>
+                                                <span>{item.name}</span>
+                                            </div>
+                                        ))}
+                                        
+                                        <div style={{ padding: "12px 15px 8px", fontSize: "12px", color: "#999", marginTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                            <span>私人页面</span>
+                                            <i className="fas fa-plus" style={{ cursor: "pointer", fontSize: "12px" }}></i>
+                                        </div>
+                                        
+                                        {[
+                                            { icon: "fas fa-book", name: "学习笔记", highlight: false },
+                                            { icon: "fas fa-lightbulb", name: "创意收集", highlight: false },
+                                            { icon: "fas fa-calendar-alt", name: "个人计划", highlight: false },
+                                        ].map((item, index) => (
+                                            <div key={index} style={{ 
+                                                padding: "8px 15px", 
+                                                display: "flex", 
+                                                alignItems: "center", 
+                                                cursor: "pointer"
+                                            }}>
+                                                <i className={item.icon} style={{ width: "20px", marginRight: "8px" }}></i>
+                                                <span>{item.name}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    {/* 底部 */}
+                                    <div style={{ padding: "15px", borderTop: "1px solid #f0f0f0" }}>
+                                        <div style={{ 
+                                            display: "flex", 
+                                            alignItems: "center", 
+                                            cursor: "pointer"
+                                        }}>
+                                            <div style={{ 
+                                                width: "28px", 
+                                                height: "28px", 
+                                                backgroundColor: "#1890ff", 
+                                                borderRadius: "50%",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                color: "white",
+                                                marginRight: "10px"
+                                            }}>
+                                                <span style={{ fontWeight: "bold" }}>Z</span>
+                                            </div>
+                                            <span>张小明</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* 内容区 */}
+                                <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                                    {/* 头部导航 */}
+                                    <div style={{ padding: "15px 20px", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center" }}>
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <i className="fas fa-file-alt" style={{ marginRight: "8px", color: "#1890ff" }}></i>
+                                            <span style={{ fontWeight: "bold" }}>我的文档</span>
+                                        </div>
+                                        <div style={{ marginLeft: "auto", display: "flex", gap: "15px" }}>
+                                            <button style={{ 
+                                                padding: "6px 12px", 
+                                                border: "1px solid #d9d9d9", 
+                                                borderRadius: "4px",
+                                                backgroundColor: "white",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                cursor: "pointer"
+                                            }}>
+                                                <i className="fas fa-plus" style={{ marginRight: "6px" }}></i>
+                                                <span>新页面</span>
+                                            </button>
+                                            <i className="fas fa-ellipsis-h" style={{ cursor: "pointer", padding: "8px", color: "#999" }}></i>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* 内容显示区 */}
+                                    <div style={{ flex: 1, padding: "20px", backgroundColor: "#fafafa", overflowY: "auto" }}>
+                                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "16px" }}>
+                                            {/* 页面卡片 */}
+                                            {[
+                                                { title: "市场分析报告", date: "上次编辑于 2 小时前", icon: "fas fa-file-alt" },
+                                                { title: "产品需求文档", date: "上次编辑于 昨天", icon: "fas fa-file-alt" },
+                                                { title: "竞品调研", date: "上次编辑于 3 天前", icon: "fas fa-file-alt" },
+                                                { title: "营销策略", date: "上次编辑于 上周", icon: "fas fa-file-alt" },
+                                                { title: "财务预算", date: "上次编辑于 上周", icon: "fas fa-file-alt" },
+                                            ].map((item, index) => (
+                                                <div key={index} style={{ 
+                                                    backgroundColor: "white", 
+                                                    borderRadius: "8px", 
+                                                    overflow: "hidden",
+                                                    cursor: "pointer",
+                                                    border: "1px solid #e8e8e8",
+                                                    transition: "all 0.3s"
+                                                }}>
+                                                    <div style={{ padding: "16px" }}>
+                                                        <i className={item.icon} style={{ color: "#1890ff", marginBottom: "10px", display: "block" }}></i>
+                                                        <div style={{ fontWeight: "bold", marginBottom: "6px" }}>{item.title}</div>
+                                                        <div style={{ fontSize: "12px", color: "#999" }}>{item.date}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            
+                                            {/* 新建页面卡片 */}
+                                            <div style={{ 
+                                                border: "1px dashed #d9d9d9", 
+                                                borderRadius: "8px", 
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                backgroundColor: "white",
+                                                padding: "30px 20px",
+                                                cursor: "pointer"
+                                            }}>
+                                                <i className="fas fa-plus" style={{ color: "#1890ff", marginBottom: "8px" }}></i>
+                                                <div>新建页面</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            },
+            // 团队协作区管理界面
+            {
+                id: "team-collaboration",
+                title: "团队协作区",
+                category: "teamCollaboration",
+                description: "团队协作空间，展示团队页面和成员信息。",
+                render: () => (
+                    <div className="prototype">
+                        <div className="prototype-label">团队协作区界面</div>
+                        <div className="prototype-content">
+                            <div style={{ display: "flex", height: "600px", backgroundColor: "white", borderRadius: "8px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+                                {/* 侧边导航 - 结构与私人区类似 */}
+                                <div style={{ width: "250px", borderRight: "1px solid #f0f0f0", display: "flex", flexDirection: "column" }}>
+                                    {/* 工作空间切换 */}
+                                    <div style={{ padding: "15px", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center" }}>
+                                        <div style={{ 
+                                            width: "32px", 
+                                            height: "32px", 
+                                            backgroundColor: "#7356BF", 
+                                            borderRadius: "6px",
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            color: "white",
+                                            fontSize: "16px",
+                                            marginRight: "10px"
+                                        }}>
+                                            <i className="fas fa-chart-line"></i>
+                                        </div>
+                                        <div style={{ fontWeight: "bold" }}>市场部项目</div>
+                                        <i className="fas fa-chevron-down" style={{ marginLeft: "auto", color: "#999" }}></i>
+                                    </div>
+                                    
+                                    {/* 搜索框 */}
+                                    <div style={{ padding: "10px 15px", borderBottom: "1px solid #f0f0f0" }}>
+                                        <div style={{ 
+                                            display: "flex", 
+                                            alignItems: "center", 
+                                            backgroundColor: "#f5f5f5", 
+                                            borderRadius: "4px", 
+                                            padding: "6px 10px" 
+                                        }}>
+                                            <i className="fas fa-search" style={{ color: "#999", marginRight: "8px" }}></i>
+                                            <span style={{ color: "#999", fontSize: "13px" }}>搜索...</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* 导航项 */}
+                                    <div style={{ flex: 1, overflowY: "auto", padding: "5px 0" }}>
+                                        <div style={{ padding: "12px 15px 8px", fontSize: "12px", color: "#999" }}>
+                                            工作区
+                                        </div>
+                                        
+                                        {/* 团队空间列表 */}
+                                        <div style={{ padding: "12px 15px 8px", fontSize: "12px", color: "#999", marginTop: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                            <span>团队空间</span>
+                                            <i className="fas fa-plus" style={{ cursor: "pointer", fontSize: "12px" }}></i>
+                                        </div>
+                                        
+                                        {[
+                                            { icon: "fas fa-users", name: "营销团队", highlight: true },
+                                            { icon: "fas fa-users", name: "产品团队", highlight: false },
+                                            { icon: "fas fa-users", name: "设计团队", highlight: false },
+                                            { icon: "fas fa-users", name: "技术团队", highlight: false },
+                                        ].map((item, index) => (
+                                            <div key={index} style={{ 
+                                                padding: "8px 15px", 
+                                                display: "flex", 
+                                                alignItems: "center", 
+                                                cursor: "pointer",
+                                                backgroundColor: item.highlight ? "#f0f7ff" : "transparent",
+                                                color: item.highlight ? "#1890ff" : "#333"
+                                            }}>
+                                                <i className={item.icon} style={{ width: "20px", marginRight: "8px" }}></i>
+                                                <span>{item.name}</span>
+                                            </div>
+                                        ))}
+                                        
+                                        {/* 私人区域链接 */}
+                                        <div style={{ padding: "12px 15px 8px", fontSize: "12px", color: "#999", marginTop: "20px" }}>
+                                            <span>私人区域</span>
+                                        </div>
+                                        
+                                        {[
+                                            { icon: "fas fa-user", name: "我的文档", highlight: false },
+                                        ].map((item, index) => (
+                                            <div key={index} style={{ 
+                                                padding: "8px 15px", 
+                                                display: "flex", 
+                                                alignItems: "center", 
+                                                cursor: "pointer"
+                                            }}>
+                                                <i className={item.icon} style={{ width: "20px", marginRight: "8px" }}></i>
+                                                <span>{item.name}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
+                                    {/* 底部 */}
+                                    <div style={{ padding: "15px", borderTop: "1px solid #f0f0f0" }}>
+                                        <div style={{ 
+                                            display: "flex", 
+                                            alignItems: "center", 
+                                            cursor: "pointer"
+                                        }}>
+                                            <div style={{ 
+                                                width: "28px", 
+                                                height: "28px", 
+                                                backgroundColor: "#1890ff", 
+                                                borderRadius: "50%",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                color: "white",
+                                                marginRight: "10px"
+                                            }}>
+                                                <span style={{ fontWeight: "bold" }}>Z</span>
+                                            </div>
+                                            <span>张小明</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* 内容区 */}
+                                <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                                    {/* 头部导航 */}
+                                    <div style={{ padding: "15px 20px", borderBottom: "1px solid #f0f0f0", display: "flex", alignItems: "center" }}>
+                                        <div style={{ display: "flex", alignItems: "center" }}>
+                                            <i className="fas fa-users" style={{ marginRight: "8px", color: "#1890ff" }}></i>
+                                            <span style={{ fontWeight: "bold" }}>营销团队</span>
+                                        </div>
+                                        <div style={{ marginLeft: "auto", display: "flex", gap: "15px" }}>
+                                            <button style={{ 
+                                                padding: "6px 12px", 
+                                                border: "1px solid #d9d9d9", 
+                                                borderRadius: "4px",
+                                                backgroundColor: "white",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                cursor: "pointer"
+                                            }}>
+                                                <i className="fas fa-plus" style={{ marginRight: "6px" }}></i>
+                                                <span>新页面</span>
+                                            </button>
+                                            <button style={{ 
+                                                padding: "6px 12px", 
+                                                border: "1px solid #d9d9d9", 
+                                                borderRadius: "4px",
+                                                backgroundColor: "white",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                cursor: "pointer"
+                                            }}>
+                                                <i className="fas fa-cog" style={{ marginRight: "6px" }}></i>
+                                                <span>团队设置</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* 内容显示区 - 团队空间有两个标签 */}
+                                    <div style={{ padding: "20px", borderBottom: "1px solid #f0f0f0", backgroundColor: "white" }}>
+                                        <div style={{ display: "flex", gap: "20px" }}>
+                                            <div style={{ 
+                                                padding: "10px 20px", 
+                                                borderBottom: "2px solid #1890ff", 
+                                                color: "#1890ff", 
+                                                fontWeight: "bold",
+                                                cursor: "pointer" 
+                                            }}>内容</div>
+                                            <div style={{ 
+                                                padding: "10px 20px", 
+                                                borderBottom: "2px solid transparent", 
+                                                color: "#666",
+                                                cursor: "pointer" 
+                                            }}>成员</div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* 团队内容区 */}
+                                    <div style={{ flex: 1, padding: "20px", backgroundColor: "#fafafa", overflowY: "auto" }}>
+                                        {/* 页面结构导航 */}
+                                        <div style={{ marginBottom: "20px" }}>
+                                            <div style={{ fontWeight: "bold", marginBottom: "10px" }}>团队页面结构</div>
+                                            <div style={{ backgroundColor: "white", padding: "15px", borderRadius: "8px", border: "1px solid #e8e8e8" }}>
+                                                <div style={{ marginBottom: "10px" }}>
+                                                    <i className="fas fa-sitemap" style={{ marginRight: "8px", color: "#1890ff" }}></i>
+                                                    <span style={{ fontWeight: "bold" }}>营销团队空间</span>
+                                                </div>
+                                                <div style={{ paddingLeft: "25px" }}>
+                                                    {[
+                                                        { name: "团队介绍", type: "folder", children: ["团队成员", "团队目标"] },
+                                                        { name: "项目计划", type: "folder", children: ["Q1计划", "Q2计划"] },
+                                                        { name: "市场分析", type: "page", children: [] },
+                                                        { name: "营销资源", type: "folder", children: ["宣传材料", "品牌资产"] },
+                                                    ].map((item, index) => (
+                                                        <div key={index} style={{ marginBottom: "8px" }}>
+                                                            <div style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+                                                                <i className={item.type === "folder" ? "fas fa-folder" : "fas fa-file-alt"} style={{ marginRight: "8px", color: item.type === "folder" ? "#faad14" : "#1890ff" }}></i>
+                                                                <span>{item.name}</span>
+                                                            </div>
+                                                            {item.children.length > 0 && (
+                                                                <div style={{ paddingLeft: "20px" }}>
+                                                                    {item.children.map((child, childIndex) => (
+                                                                        <div key={childIndex} style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+                                                                            <i className="fas fa-file-alt" style={{ marginRight: "8px", color: "#1890ff" }}></i>
+                                                                            <span>{child}</span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* 最近更新 */}
+                                        <div>
+                                            <div style={{ fontWeight: "bold", marginBottom: "10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                                <span>最近更新</span>
+                                                <span style={{ fontSize: "13px", color: "#1890ff", cursor: "pointer" }}>查看全部</span>
+                                            </div>
+                                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "16px" }}>
+                                                {[
+                                                    { title: "Q2营销计划", date: "更新于 1 小时前", updater: "张小明" },
+                                                    { title: "市场分析报告", date: "更新于 昨天", updater: "李华" },
+                                                    { title: "品牌宣传方案", date: "更新于 2 天前", updater: "王芳" },
+                                                ].map((item, index) => (
+                                                    <div key={index} style={{ 
+                                                        backgroundColor: "white", 
+                                                        borderRadius: "8px", 
+                                                        overflow: "hidden",
+                                                        cursor: "pointer",
+                                                        border: "1px solid #e8e8e8",
+                                                        padding: "16px"
+                                                    }}>
+                                                        <div style={{ fontWeight: "bold", marginBottom: "8px" }}>{item.title}</div>
+                                                        <div style={{ fontSize: "12px", color: "#999", marginBottom: "5px" }}>{item.date}</div>
+                                                        <div style={{ fontSize: "12px", color: "#666", display: "flex", alignItems: "center" }}>
+                                                            <div style={{ 
+                                                                width: "18px", 
+                                                                height: "18px", 
+                                                                backgroundColor: "#1890ff", 
+                                                                borderRadius: "50%",
+                                                                display: "flex",
+                                                                justifyContent: "center",
+                                                                alignItems: "center",
+                                                                color: "white",
+                                                                marginRight: "5px",
+                                                                fontSize: "10px"
+                                                            }}>
+                                                                {item.updater.substr(0, 1)}
+                                                            </div>
+                                                            <span>{item.updater}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            },
+            // 团队成员管理界面
+            {
+                id: "team-members",
+                title: "团队成员管理",
+                category: "teamCollaboration",
+                description: "管理团队成员及其角色权限。",
+                render: () => (
+                    <div className="prototype">
+                        <div className="prototype-label">团队成员管理界面</div>
+                        <div className="prototype-content">
+                            <div style={{ maxWidth: "900px", margin: "0 auto", backgroundColor: "white", padding: "30px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+                                <div style={{ display: "flex", alignItems: "center", marginBottom: "30px" }}>
+                                    <div style={{ 
+                                        width: "40px", 
+                                        height: "40px", 
+                                        backgroundColor: "#1890ff", 
+                                        borderRadius: "8px",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        color: "white",
+                                        fontSize: "18px",
+                                        marginRight: "15px"
+                                    }}>
+                                        <i className="fas fa-users"></i>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontWeight: "bold", fontSize: "18px" }}>营销团队成员</div>
+                                        <div style={{ color: "#666", fontSize: "14px" }}>共 8 名成员</div>
+                                    </div>
+                                    <button style={{ 
+                                        marginLeft: "auto",
+                                        padding: "8px 16px", 
+                                        backgroundColor: "#1890ff", 
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "4px",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        cursor: "pointer"
+                                    }}>
+                                        <i className="fas fa-user-plus" style={{ marginRight: "8px" }}></i>
+                                        <span>邀请成员</span>
+                                    </button>
+                                </div>
+                                
+                                {/* 搜索和筛选 */}
+                                <div style={{ display: "flex", marginBottom: "20px", gap: "15px" }}>
+                                    <div style={{ 
+                                        flex: 1,
+                                        display: "flex", 
+                                        alignItems: "center", 
+                                        backgroundColor: "#f5f5f5", 
+                                        borderRadius: "4px", 
+                                        padding: "8px 15px" 
+                                    }}>
+                                        <i className="fas fa-search" style={{ color: "#999", marginRight: "8px" }}></i>
+                                        <input 
+                                            type="text" 
+                                            placeholder="搜索成员..." 
+                                            style={{ 
+                                                border: "none", 
+                                                backgroundColor: "transparent", 
+                                                outline: "none",
+                                                width: "100%"
+                                            }} 
+                                        />
+                                    </div>
+                                    
+                                    <select style={{ 
+                                        padding: "8px 15px", 
+                                        borderRadius: "4px", 
+                                        border: "1px solid #d9d9d9",
+                                        backgroundColor: "white",
+                                        minWidth: "150px"
+                                    }}>
+                                        <option>所有角色</option>
+                                        <option>管理员</option>
+                                        <option>编辑者</option>
+                                        <option>评论者</option>
+                                        <option>查看者</option>
+                                    </select>
+                                </div>
+                                
+                                {/* 成员列表 */}
+                                <div style={{ border: "1px solid #f0f0f0", borderRadius: "8px", overflow: "hidden" }}>
+                                    {/* 表头 */}
+                                    <div style={{ 
+                                        display: "grid", 
+                                        gridTemplateColumns: "1fr 200px 150px 100px", 
+                                        padding: "12px 20px",
+                                        backgroundColor: "#fafafa",
+                                        borderBottom: "1px solid #f0f0f0",
+                                        fontWeight: "bold",
+                                        color: "#666"
+                                    }}>
+                                        <div>成员</div>
+                                        <div>邮箱</div>
+                                        <div>角色</div>
+                                        <div>操作</div>
+                                    </div>
+                                    
+                                    {/* 成员项 */}
+                                    {[
+                                        { name: "张小明", email: "zhang@example.com", role: "管理员", isOwner: true },
+                                        { name: "李华", email: "li@example.com", role: "编辑者", isOwner: false },
+                                        { name: "王芳", email: "wang@example.com", role: "编辑者", isOwner: false },
+                                        { name: "刘伟", email: "liu@example.com", role: "评论者", isOwner: false },
+                                        { name: "陈明", email: "chen@example.com", role: "评论者", isOwner: false },
+                                        { name: "赵静", email: "zhao@example.com", role: "查看者", isOwner: false },
+                                        { name: "黄海", email: "huang@example.com", role: "查看者", isOwner: false },
+                                        { name: "周艳", email: "zhou@example.com", role: "查看者", isOwner: false },
+                                    ].map((member, index) => (
+                                        <div key={index} style={{ 
+                                            display: "grid", 
+                                            gridTemplateColumns: "1fr 200px 150px 100px", 
+                                            padding: "15px 20px",
+                                            borderBottom: index !== 7 ? "1px solid #f0f0f0" : "none",
+                                            alignItems: "center"
+                                        }}>
+                                            <div style={{ display: "flex", alignItems: "center" }}>
+                                                <div style={{ 
+                                                    width: "32px", 
+                                                    height: "32px", 
+                                                    backgroundColor: index % 3 === 0 ? "#1890ff" : index % 3 === 1 ? "#13c2c2" : "#722ed1", 
+                                                    borderRadius: "50%",
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    color: "white",
+                                                    marginRight: "12px"
+                                                }}>
+                                                    {member.name.substr(0, 1)}
+                                                </div>
+                                                <div>
+                                                    <div style={{ fontWeight: "bold" }}>
+                                                        {member.name}
+                                                        {member.isOwner && (
+                                                            <span style={{ 
+                                                                marginLeft: "8px", 
+                                                                fontSize: "12px", 
+                                                                backgroundColor: "#f0f7ff", 
+                                                                color: "#1890ff",
+                                                                padding: "2px 6px",
+                                                                borderRadius: "3px"
+                                                            }}>
+                                                                所有者
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div style={{ fontSize: "12px", color: "#666", marginTop: "3px" }}>
+                                                        加入于 {index === 0 ? "6 个月前" : index < 3 ? "3 个月前" : "1 个月前"}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style={{ color: "#666" }}>{member.email}</div>
+                                            <div>
+                                                <select style={{ 
+                                                    padding: "6px 10px", 
+                                                    borderRadius: "4px", 
+                                                    border: "1px solid #d9d9d9",
+                                                    backgroundColor: "white",
+                                                    width: "100%",
+                                                    color: member.role === "管理员" ? "#1890ff" : 
+                                                           member.role === "编辑者" ? "#13c2c2" : 
+                                                           member.role === "评论者" ? "#722ed1" : "#666"
+                                                }} defaultValue={member.role} disabled={member.isOwner}>
+                                                    <option>管理员</option>
+                                                    <option>编辑者</option>
+                                                    <option>评论者</option>
+                                                    <option>查看者</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                {!member.isOwner && (
+                                                    <button style={{ 
+                                                        padding: "6px 10px", 
+                                                        border: "1px solid #d9d9d9", 
+                                                        borderRadius: "4px",
+                                                        backgroundColor: "white",
+                                                        cursor: "pointer"
+                                                    }}>
+                                                        移除
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                {/* 底部说明 */}
+                                <div style={{ marginTop: "20px", fontSize: "13px", color: "#666" }}>
+                                    <div style={{ marginBottom: "10px" }}>
+                                        <div style={{ fontWeight: "bold", marginBottom: "5px" }}>角色权限说明：</div>
+                                        <ul style={{ margin: 0, paddingLeft: "20px" }}>
+                                            <li><b>管理员</b>：可以编辑内容、管理成员和权限设置</li>
+                                            <li><b>编辑者</b>：可以查看和编辑内容，但不能管理成员和权限</li>
+                                            <li><b>评论者</b>：可以查看内容并发表评论，但不能编辑</li>
+                                            <li><b>查看者</b>：只能查看内容，不能编辑或评论</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            },
+            // 权限管理界面
+            {
+                id: "permission-settings",
+                title: "权限设置",
+                category: "permissionManagement",
+                description: "设置页面和内容的访问权限。",
+                render: () => (
+                    <div className="prototype">
+                        <div className="prototype-label">权限设置界面</div>
+                        <div className="prototype-content">
+                            <div style={{ maxWidth: "800px", margin: "0 auto", backgroundColor: "white", padding: "30px", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
+                                <div style={{ borderBottom: "1px solid #f0f0f0", paddingBottom: "20px", marginBottom: "25px" }}>
+                                    <div style={{ display: "flex", alignItems: "center", marginBottom: "15px" }}>
+                                        <i className="fas fa-file-alt" style={{ color: "#1890ff", marginRight: "10px", fontSize: "20px" }}></i>
+                                        <div style={{ fontWeight: "bold", fontSize: "18px" }}>市场分析报告</div>
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", color: "#666", fontSize: "14px" }}>
+                                        <div style={{ 
+                                            display: "flex", 
+                                            alignItems: "center", 
+                                            marginRight: "20px" 
+                                        }}>
+                                            <i className="fas fa-user" style={{ marginRight: "5px" }}></i>
+                                            <span>创建者: 张小明</span>
+                                        </div>
+                                        <div>
+                                            <i className="fas fa-clock" style={{ marginRight: "5px" }}></i>
+                                            <span>创建于: 2023年10月15日</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* 权限设置区域 */}
+                                <div style={{ marginBottom: "30px" }}>
+                                    <div style={{ fontWeight: "bold", marginBottom: "15px" }}>权限设置</div>
+                                    
+                                    {/* 基础权限选择 */}
+                                    <div style={{ marginBottom: "25px" }}>
+                                        <div style={{ fontSize: "14px", marginBottom: "10px" }}>谁可以访问此页面？</div>
+                                        <div style={{ display: "flex", gap: "15px" }}>
+                                            {[
+                                                { id: "private", label: "仅自己", icon: "fas fa-lock", active: false },
+                                                { id: "team", label: "营销团队", icon: "fas fa-users", active: true },
+                                                { id: "workspace", label: "整个工作区", icon: "fas fa-building", active: false },
+                                                { id: "public", label: "任何人", icon: "fas fa-globe", active: false },
+                                            ].map((option, index) => (
+                                                <div key={index} style={{ 
+                                                    display: "flex", 
+                                                    flexDirection: "column", 
+                                                    alignItems: "center",
+                                                    padding: "12px",
+                                                    borderRadius: "8px",
+                                                    border: option.active ? "2px solid #1890ff" : "1px solid #d9d9d9",
+                                                    backgroundColor: option.active ? "#f0f7ff" : "white",
+                                                    cursor: "pointer",
+                                                    minWidth: "90px"
+                                                }}>
+                                                    <i className={option.icon} style={{ 
+                                                        fontSize: "20px", 
+                                                        marginBottom: "8px",
+                                                        color: option.active ? "#1890ff" : "#666" 
+                                                    }}></i>
+                                                    <div style={{ 
+                                                        fontSize: "13px",
+                                                        color: option.active ? "#1890ff" : "#333" 
+                                                    }}>{option.label}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* 团队成员权限设置 */}
+                                    <div>
+                                        <div style={{ fontSize: "14px", marginBottom: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                            <div>团队成员权限细则</div>
+                                            <button style={{ 
+                                                padding: "5px 12px", 
+                                                backgroundColor: "white", 
+                                                border: "1px solid #d9d9d9",
+                                                borderRadius: "4px",
+                                                fontSize: "13px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                cursor: "pointer"
+                                            }}>
+                                                <i className="fas fa-plus" style={{ marginRight: "5px", fontSize: "12px" }}></i>
+                                                <span>添加成员</span>
+                                            </button>
+                                        </div>
+                                        
+                                        {/* 权限表格 */}
+                                        <div style={{ border: "1px solid #f0f0f0", borderRadius: "8px", overflow: "hidden" }}>
+                                            {/* 表头 */}
+                                            <div style={{ 
+                                                display: "grid", 
+                                                gridTemplateColumns: "1fr 120px 100px", 
+                                                padding: "12px 20px",
+                                                backgroundColor: "#fafafa",
+                                                borderBottom: "1px solid #f0f0f0",
+                                                fontWeight: "bold",
+                                                color: "#666"
+                                            }}>
+                                                <div>用户/组</div>
+                                                <div>权限级别</div>
+                                                <div>操作</div>
+                                            </div>
+                                            
+                                            {/* 项目 */}
+                                            {[
+                                                { name: "营销团队", type: "group", permission: "可编辑" },
+                                                { name: "张小明", type: "user", permission: "完全控制", isOwner: true },
+                                                { name: "李华", type: "user", permission: "可编辑" },
+                                                { name: "王芳", type: "user", permission: "可评论" },
+                                                { name: "技术团队", type: "group", permission: "只读" },
+                                            ].map((item, index) => (
+                                                <div key={index} style={{ 
+                                                    display: "grid", 
+                                                    gridTemplateColumns: "1fr 120px 100px", 
+                                                    padding: "15px 20px",
+                                                    borderBottom: index !== 4 ? "1px solid #f0f0f0" : "none",
+                                                    alignItems: "center"
+                                                }}>
+                                                    <div style={{ display: "flex", alignItems: "center" }}>
+                                                        <div style={{ 
+                                                            width: "32px", 
+                                                            height: "32px", 
+                                                            backgroundColor: item.type === "group" ? "#faad14" : "#1890ff", 
+                                                            borderRadius: item.type === "group" ? "8px" : "50%",
+                                                            display: "flex",
+                                                            justifyContent: "center",
+                                                            alignItems: "center",
+                                                            color: "white",
+                                                            marginRight: "12px"
+                                                        }}>
+                                                            <i className={item.type === "group" ? "fas fa-users" : "fas fa-user"}></i>
+                                                        </div>
+                                                        <div>
+                                                            <div style={{ fontWeight: "bold" }}>
+                                                                {item.name}
+                                                                {item.isOwner && (
+                                                                    <span style={{ 
+                                                                        marginLeft: "8px", 
+                                                                        fontSize: "12px", 
+                                                                        backgroundColor: "#f0f7ff", 
+                                                                        color: "#1890ff",
+                                                                        padding: "2px 6px",
+                                                                        borderRadius: "3px"
+                                                                    }}>
+                                                                        所有者
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div style={{ fontSize: "12px", color: "#666" }}>
+                                                                {item.type === "group" ? "团队" : "用户"}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <select style={{ 
+                                                            padding: "6px 10px", 
+                                                            borderRadius: "4px", 
+                                                            border: "1px solid #d9d9d9",
+                                                            backgroundColor: "white",
+                                                            width: "100%",
+                                                            color: item.permission === "完全控制" ? "#1890ff" : 
+                                                                   item.permission === "可编辑" ? "#13c2c2" : 
+                                                                   item.permission === "可评论" ? "#722ed1" : "#666"
+                                                        }} defaultValue={item.permission} disabled={item.isOwner}>
+                                                            <option>完全控制</option>
+                                                            <option>可编辑</option>
+                                                            <option>可评论</option>
+                                                            <option>只读</option>
+                                                            <option>无访问</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        {!item.isOwner && (
+                                                            <button style={{ 
+                                                                padding: "6px 10px", 
+                                                                border: "1px solid #d9d9d9", 
+                                                                borderRadius: "4px",
+                                                                backgroundColor: "white",
+                                                                cursor: "pointer"
+                                                            }}>
+                                                                移除
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* 高级选项 */}
+                                <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: "20px" }}>
+                                    <div style={{ fontWeight: "bold", marginBottom: "15px" }}>高级选项</div>
+                                    
+                                    <div style={{ marginBottom: "15px" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+                                            <div style={{ display: "flex", alignItems: "center" }}>
+                                                <i className="fas fa-link" style={{ marginRight: "8px", color: "#1890ff" }}></i>
+                                                <span style={{ fontWeight: "bold" }}>允许通过链接分享</span>
+                                            </div>
+                                            <label className="switch" style={{ position: "relative", display: "inline-block", width: "40px", height: "20px" }}>
+                                                <input type="checkbox" checked style={{ opacity: 0, width: 0, height: 0 }} />
+                                                <span style={{ 
+                                                    position: "absolute", 
+                                                    cursor: "pointer", 
+                                                    top: 0, left: 0, right: 0, bottom: 0, 
+                                                    backgroundColor: "#1890ff", 
+                                                    borderRadius: "10px",
+                                                    transition: "0.4s"
+                                                }}>
+                                                    <span style={{ 
+                                                        position: "absolute", 
+                                                        content: "",
+                                                        height: "16px", 
+                                                        width: "16px", 
+                                                        left: "2px", 
+                                                        bottom: "2px", 
+                                                        backgroundColor: "white", 
+                                                        borderRadius: "50%", 
+                                                        transition: "0.4s",
+                                                        transform: "translateX(20px)"
+                                                    }}></span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div style={{ fontSize: "13px", color: "#666", marginLeft: "24px" }}>
+                                            启用后，可以通过链接分享此页面给任何人
+                                        </div>
+                                    </div>
+                                    
+                                    <div style={{ marginBottom: "15px" }}>
+                                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+                                            <div style={{ display: "flex", alignItems: "center" }}>
+                                                <i className="fas fa-search" style={{ marginRight: "8px", color: "#1890ff" }}></i>
+                                                <span style={{ fontWeight: "bold" }}>在搜索结果中显示</span>
+                                            </div>
+                                            <label className="switch" style={{ position: "relative", display: "inline-block", width: "40px", height: "20px" }}>
+                                                <input type="checkbox" checked style={{ opacity: 0, width: 0, height: 0 }} />
+                                                <span style={{ 
+                                                    position: "absolute", 
+                                                    cursor: "pointer", 
+                                                    top: 0, left: 0, right: 0, bottom: 0, 
+                                                    backgroundColor: "#1890ff", 
+                                                    borderRadius: "10px",
+                                                    transition: "0.4s"
+                                                }}>
+                                                    <span style={{ 
+                                                        position: "absolute", 
+                                                        content: "",
+                                                        height: "16px", 
+                                                        width: "16px", 
+                                                        left: "2px", 
+                                                        bottom: "2px", 
+                                                        backgroundColor: "white", 
+                                                        borderRadius: "50%", 
+                                                        transition: "0.4s",
+                                                        transform: "translateX(20px)"
+                                                    }}></span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div style={{ fontSize: "13px", color: "#666", marginLeft: "24px" }}>
+                                            此页面将出现在工作空间的搜索结果中
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {/* 底部按钮 */}
+                                <div style={{ marginTop: "30px", display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                                    <button style={{ 
+                                        padding: "8px 16px", 
+                                        border: "1px solid #d9d9d9", 
+                                        borderRadius: "4px",
+                                        backgroundColor: "white",
+                                        cursor: "pointer"
+                                    }}>
+                                        取消
+                                    </button>
+                                    <button style={{ 
+                                        padding: "8px 16px", 
+                                        border: "none", 
+                                        borderRadius: "4px",
+                                        backgroundColor: "#1890ff",
+                                        color: "white",
+                                        cursor: "pointer"
+                                    }}>
+                                        保存设置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        ];
+
+        // 原型显示组件
+        const PrototypeDisplay = () => {
+            const [activeTab, setActiveTab] = React.useState("all");
+            const [expandedSection, setExpandedSection] = React.useState(null);
+            
+            // 筛选原型
+            const filteredPrototypes = activeTab === "all" 
+                ? prototypeInterfaces 
+                : prototypeInterfaces.filter(p => p.category === activeTab);
+            
+            // 切换展开的部分
+            const toggleSection = (sectionId) => {
+                if (expandedSection === sectionId) {
+                    setExpandedSection(null);
+                } else {
+                    setExpandedSection(sectionId);
+                }
+            };
+            
+            return (
+                <div>
+                    {/* 功能标签页 */}
+                    <div className="tabs">
+                        <div 
+                            className={`tab ${activeTab === "all" ? "active" : ""}`} 
+                            onClick={() => setActiveTab("all")}
+                        >
+                            全部
+                        </div>
+                        {Object.keys(productFeatures).map(key => (
+                            <div 
+                                key={key}
+                                className={`tab ${activeTab === key ? "active" : ""}`} 
+                                onClick={() => setActiveTab(key)}
+                            >
+                                {productFeatures[key].title}
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {/* 产品功能说明 */}
+                    {activeTab !== "all" && (
+                        <div className="prototype-section">
+                            <div className="section-title">{productFeatures[activeTab].title}</div>
+                            <p>{productFeatures[activeTab].description}</p>
+                            
+                            <div style={{ marginTop: "20px" }}>
+                                <div style={{ fontWeight: "bold", marginBottom: "10px" }}>包含的子功能：</div>
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "15px" }}>
+                                    {productFeatures[activeTab].subFeatures.map((feature, index) => (
+                                        <div key={index} style={{ 
+                                            padding: "15px", 
+                                            border: "1px solid #e8e8e8", 
+                                            borderRadius: "8px",
+                                            backgroundColor: "#fafafa"
+                                        }}>
+                                            <div style={{ fontWeight: "bold", marginBottom: "8px" }}>{feature.name}</div>
+                                            <div style={{ fontSize: "14px", color: "#666" }}>{feature.description}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {/* 原型界面列表 */}
+                    <div className="prototype-section">
+                        <div className="section-title">原型界面</div>
+                        
+                        {filteredPrototypes.length > 0 ? (
+                            <div>
+                                {filteredPrototypes.map((proto, index) => (
+                                    <div key={proto.id} style={{ marginBottom: "30px" }}>
+                                        <div 
+                                            onClick={() => toggleSection(proto.id)}
+                                            style={{ 
+                                                padding: "15px", 
+                                                backgroundColor: "#fafafa", 
+                                                borderRadius: "8px",
+                                                cursor: "pointer",
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                                border: "1px solid #e8e8e8",
+                                                marginBottom: "15px"
+                                            }}
+                                        >
+                                            <div>
+                                                <div style={{ fontWeight: "bold", fontSize: "16px" }}>{proto.title}</div>
+                                                <div style={{ color: "#666", fontSize: "14px", marginTop: "5px" }}>{proto.description}</div>
+                                            </div>
+                                            <i className={`fas fa-chevron-${expandedSection === proto.id ? "up" : "down"}`} style={{ color: "#999" }}></i>
+                                        </div>
+                                        
+                                        {expandedSection === proto.id && (
+                                            <div>
+                                                {proto.render()}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div style={{ textAlign: "center", padding: "30px", color: "#999" }}>
+                                <i className="fas fa-search" style={{ fontSize: "24px", marginBottom: "10px" }}></i>
+                                <div>没有找到符合条件的原型界面</div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+        
+        // 渲染应用
+        ReactDOM.render(
+            <PrototypeDisplay />,
+            document.getElementById('prototypes-content')
+        );
+    </script>
+</body>
+</html>
