@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotionClone - 团队协作区</title>
+    <!-- Ant Design CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f2f5;
+        }
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .prototype-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .prototype-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        .prototype-subtitle {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .prototype-section {
+            margin-bottom: 60px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            color: #1890ff;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #40a9ff;
+        }
+        .prototype {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .prototype-content {
+            padding: 20px;
+        }
+        .prototype-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1890ff;
+        }
+        /* 导航菜单样式 */
+        .nav-menu {
+            display: flex;
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        .nav-item {
+            padding: 10px 15px;
+            margin-right: 5px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            white-space: nowrap;
+        }
+        .nav-item:hover {
+            background-color: #f5f5f5;
+        }
+        .nav-item.active {
+            background-color: #1890ff;
+            color: white;
+        }
+        /* 团队协作区样式 */
+        .workspace-layout {
+            display: flex;
+            height: 600px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            border-right: 1px solid #e8e8e8;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+        }
+        .workspace-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            background-color: #2EAADC;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .workspace-name {
+            font-weight: bold;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .sidebar-content {
+            flex: 1;
+            padding: 15px;
+            overflow: auto;
+        }
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+        .sidebar-section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar-section-title i {
+            margin-left: 5px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+        .sidebar-item:hover {
+            background-color: #f0f0f0;
+        }
+        .sidebar-item.active {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        .sidebar-item-icon {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+        .sidebar-item-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .sidebar-item-actions {
+            display: none;
+            margin-left: 5px;
+        }
+        .sidebar-item:hover .sidebar-item-actions {
+            display: block;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .content-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+        }
+        .content-title {
+            font-size: 18px;
+            font-weight: bold;
+            flex: 1;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .content-body {
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+        }
+        /* 看板视图 */
+        .kanban-board {
+            display: flex;
+            height: 100%;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+        }
+        .kanban-column {
+            width: 280px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            max-height: 100%;
+        }
+        .kanban-column-header {
+            padding: 12px 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .column-count {
+            background-color: rgba(0, 0, 0, 0.07);
+            color: #666;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .kanban-cards {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .kanban-card {
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kanban-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+        .card-title {
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .card-desc {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #888;
+        }
+        .card-members {
+            display: flex;
+        }
+        .member-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #1890ff;
+            color: white;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: -6px;
+            border: 1px solid white;
+        }
+        .member-avatar:first-child {
+            margin-left: 0;
+        }
+        .add-card-btn {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .add-card-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        .add-card-btn i {
+            margin-right: 5px;
+        }
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            height: 6px;
+            width: 30px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        .tag-red {
+            background-color: #ff4d4f;
+        }
+        .tag-green {
+            background-color: #52c41a;
+        }
+        .tag-blue {
+            background-color: #1890ff;
+        }
+        .tag-orange {
+            background-color: #fa8c16;
+        }
+        .tag-purple {
+            background-color: #722ed1;
+        }
+        /* 协作文档 */
+        .document-view {
+            height: 100%;
+            padding: 0 20px;
+        }
+        .document-header {
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 20px;
+        }
+        .document-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .collaborators {
+            display: flex;
+            align-items: center;
+        }
+        .collaborator {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #1890ff;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: -8px;
+            border: 2px solid white;
+        }
+        .collaborator:first-child {
+            margin-left: 0;
+        }
+        .add-collaborator {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px dashed #d9d9d9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        .shared-status {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+            padding: 5px 10px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .shared-status i {
+            margin-right: 5px;
+        }
+        .document-body {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .document-body h2 {
+            margin: 25px 0 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .document-body p {
+            margin-bottom: 15px;
+        }
+        .document-body ul {
+            margin-bottom: 15px;
+            padding-left: 20px;
+        }
+        .document-body li {
+            margin-bottom: 5px;
+        }
+        .comment-indicator {
+            background-color: #fffbe6;
+            padding: 2px;
+            cursor: pointer;
+            border-bottom: 2px solid #ffd666;
+        }
+        /* 团队成员页面 */
+        .team-members {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .members-list {
+            margin-top: 20px;
+        }
+        .member-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .member-avatar-lg {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #1890ff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 16px;
+        }
+        .member-info {
+            flex: 1;
+        }
+        .member-name {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        .member-role {
+            color: #666;
+            font-size: 12px;
+        }
+        .member-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .invite-form {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .invite-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .input-field {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+        }
+        .role-select {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            width: 130px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="prototype-header">
+            <div class="prototype-title">NotionClone 原型设计</div>
+            <div class="prototype-subtitle">工作空间管理、分区管理与团队协作权限系统</div>
+        </div>
+
+        <!-- 导航菜单 -->
+        <div class="nav-menu">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="workspace-list.html" class="nav-item">工作空间列表</a>
+            <a href="create-workspace.html" class="nav-item">创建工作空间</a>
+            <a href="workspace-settings.html" class="nav-item">工作空间设置</a>
+            <a href="private-space.html" class="nav-item">私人分区</a>
+            <a href="team-collaboration.html" class="nav-item active">团队协作区</a>
+            <a href="team-members.html" class="nav-item">团队成员管理</a>
+            <a href="permission-settings.html" class="nav-item">权限设置</a>
+        </div>
+
+        <div class="prototype-section">
+            <div class="section-title">团队协作区</div>
+            <div class="prototype">
+                <div class="prototype-label">项目看板</div>
+                <div class="prototype-content">
+                    <div class="workspace-layout">
+                        <!-- 侧边栏 -->
+                        <div class="sidebar">
+                            <div class="sidebar-header">
+                                <div class="workspace-icon">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div class="workspace-name">产品开发</div>
+                                <i class="fas fa-chevron-down" style="margin-left: 5px; color: #888; cursor: pointer;"></i>
+                            </div>
+                            <div class="sidebar-content">
+                                <div class="sidebar-section">
+                                    <div class="sidebar-section-title">团队分区 <i class="fas fa-plus"></i></div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-file-alt"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">产品文档</div>
+                                        <div class="sidebar-item-actions">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </div>
+                                    </div>
+                                    <div class="sidebar-item active">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-tasks"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">项目看板</div>
+                                        <div class="sidebar-item-actions">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">团队日历</div>
+                                        <div class="sidebar-item-actions">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">团队成员</div>
+                                        <div class="sidebar-item-actions">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sidebar-section">
+                                    <div class="sidebar-section-title">项目分类 <i class="fas fa-plus"></i></div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-layer-group"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">前端开发</div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-layer-group"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">后端开发</div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-layer-group"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">UI/UX 设计</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sidebar-section">
+                                    <div class="sidebar-section-title">私人分区</div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">我的笔记</div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-check-square"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">待办事项</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 主内容区 -->
+                        <div class="main-content">
+                            <div class="content-header">
+                                <div class="content-title">项目看板</div>
+                                <div class="header-actions">
+                                    <button class="btn" style="background-color: #f5f5f5; color: #333;">
+                                        <i class="fas fa-user-plus"></i> 邀请
+                                    </button>
+                                    <button class="btn" style="background-color: #f5f5f5; color: #333;">
+                                        <i class="fas fa-filter"></i> 筛选
+                                    </button>
+                                    <button class="btn">
+                                        <i class="fas fa-plus"></i> 添加任务
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="content-body">
+                                <div class="kanban-board">
+                                    <!-- 待处理列 -->
+                                    <div class="kanban-column">
+                                        <div class="kanban-column-header">
+                                            <span>待处理</span>
+                                            <span class="column-count">3</span>
+                                        </div>
+                                        <div class="kanban-cards">
+                                            <div class="kanban-card">
+                                                <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                                                    <span class="tag tag-red"></span>
+                                                    <span class="tag tag-blue"></span>
+                                                </div>
+                                                <div class="card-title">实现用户登录功能</div>
+                                                <div class="card-desc">设计并实现用户登录、注册和身份验证系统。</div>
+                                                <div class="card-meta">
+                                                    <div class="card-members">
+                                                        <div class="member-avatar">LW</div>
+                                                        <div class="member-avatar">ZS</div>
+                                                    </div>
+                                                    <div>9月15日</div>
+                                                </div>
+                                            </div>
+                                            <div class="kanban-card">
+                                                <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                                                    <span class="tag tag-orange"></span>
+                                                </div>
+                                                <div class="card-title">设计首页布局</div>
+                                                <div class="card-desc">为应用设计现代、简洁的首页布局。</div>
+                                                <div class="card-meta">
+                                                    <div class="card-members">
+                                                        <div class="member-avatar">CL</div>
+                                                    </div>
+                                                    <div>9月18日</div>
+                                                </div>
+                                            </div>
+                                            <div class="kanban-card">
+                                                <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                                                    <span class="tag tag-green"></span>
+                                                </div>
+                                                <div class="card-title">数据库架构设计</div>
+                                                <div class="card-desc">设计应用的数据库架构和关系模型。</div>
+                                                <div class="card-meta">
+                                                    <div class="card-members">
+                                                        <div class="member-avatar">XY</div>
+                                                    </div>
+                                                    <div>9月20日</div>
+                                                </div>
+                                            </div>
+                                            <div class="add-card-btn">
+                                                <i class="fas fa-plus"></i> 添加任务
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 进行中列 -->
+                                    <div class="kanban-column">
+                                        <div class="kanban-column-header">
+                                            <span>进行中</span>
+                                            <span class="column-count">2</span>
+                                        </div>
+                                        <div class="kanban-cards">
+                                            <div class="kanban-card">
+                                                <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                                                    <span class="tag tag-purple"></span>
+                                                    <span class="tag tag-blue"></span>
+                                                </div>
+                                                <div class="card-title">开发文档编辑器组件</div>
+                                                <div class="card-desc">实现一个支持富文本编辑的文档编辑器组件。</div>
+                                                <div class="card-meta">
+                                                    <div class="card-members">
+                                                        <div class="member-avatar">LW</div>
+                                                    </div>
+                                                    <div>9月12日</div>
+                                                </div>
+                                            </div>
+                                            <div class="kanban-card">
+                                                <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                                                    <span class="tag tag-red"></span>
+                                                </div>
+                                                <div class="card-title">设计用户个人资料页面</div>
+                                                <div class="card-desc">设计包含用户信息和活动的个人资料页面。</div>
+                                                <div class="card-meta">
+                                                    <div class="card-members">
+                                                        <div class="member-avatar">CL</div>
+                                                    </div>
+                                                    <div>9月14日</div>
+                                                </div>
+                                            </div>
+                                            <div class="add-card-btn">
+                                                <i class="fas fa-plus"></i> 添加任务
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 审核列 -->
+                                    <div class="kanban-column">
+                                        <div class="kanban-column-header">
+                                            <span>审核</span>
+                                            <span class="column-count">1</span>
+                                        </div>
+                                        <div class="kanban-cards">
+                                            <div class="kanban-card">
+                                                <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                                                    <span class="tag tag-green"></span>
+                                                    <span class="tag tag-blue"></span>
+                                                </div>
+                                                <div class="card-title">实现通知系统</div>
+                                                <div class="card-desc">实现实时通知和提醒功能。</div>
+                                                <div class="card-meta">
+                                                    <div class="card-members">
+                                                        <div class="member-avatar">ZS</div>
+                                                    </div>
+                                                    <div>9月10日</div>
+                                                </div>
+                                            </div>
+                                            <div class="add-card-btn">
+                                                <i class="fas fa-plus"></i> 添加任务
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 已完成列 -->
+                                    <div class="kanban-column">
+                                        <div class="kanban-column-header">
+                                            <span>已完成</span>
+                                            <span class="column-count">2</span>
+                                        </div>
+                                        <div class="kanban-cards">
+                                            <div class="kanban-card">
+                                                <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                                                    <span class="tag tag-blue"></span>
+                                                </div>
+                                                <div class="card-title">项目需求分析</div>
+                                                <div class="card-desc">收集并分析项目需求，制定初步开发计划。</div>
+                                                <div class="card-meta">
+                                                    <div class="card-members">
+                                                        <div class="member-avatar">LW</div>
+                                                        <div class="member-avatar">CL</div>
+                                                    </div>
+                                                    <div>9月5日</div>
+                                                </div>
+                                            </div>
+                                            <div class="kanban-card">
+                                                <div style="display: flex; gap: 5px; margin-bottom: 8px;">
+                                                    <span class="tag tag-orange"></span>
+                                                </div>
+                                                <div class="card-title">搭建项目基础架构</div>
+                                                <div class="card-desc">创建项目仓库并搭建基本的开发环境。</div>
+                                                <div class="card-meta">
+                                                    <div class="card-members">
+                                                        <div class="member-avatar">XY</div>
+                                                    </div>
+                                                    <div>9月7日</div>
+                                                </div>
+                                            </div>
+                                            <div class="add-card-btn">
+                                                <i class="fas fa-plus"></i> 添加任务
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 协作文档 -->
+            <div class="prototype">
+                <div class="prototype-label">协作文档</div>
+                <div class="prototype-content">
+                    <div class="workspace-layout">
+                        <!-- 简化的侧边栏 -->
+                        <div class="sidebar" style="width: 50px;">
+                            <div style="padding: 15px; text-align: center;">
+                                <div class="workspace-icon" style="margin: 0 auto;">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                            </div>
+                            <div style="padding: 15px 0; text-align: center;">
+                                <div style="margin-bottom: 20px; cursor: pointer;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div style="margin-bottom: 20px; cursor: pointer; color: #1890ff;">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div style="margin-bottom: 20px; cursor: pointer;">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div style="margin-bottom: 20px; cursor: pointer;">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <div style="margin-bottom: 20px; cursor: pointer;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 文档视图 -->
+                        <div class="main-content">
+                            <div class="document-view">
+                                <div class="document-header">
+                                    <div class="document-title">产品开发计划与规范</div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="display: flex; align-items: center;">
+                                            <div class="collaborators">
+                                                <div class="collaborator">LW</div>
+                                                <div class="collaborator">CL</div>
+                                                <div class="collaborator">ZS</div>
+                                                <div class="add-collaborator">
+                                                    <i class="fas fa-plus" style="font-size: 10px;"></i>
+                                                </div>
+                                            </div>
+                                            <div class="shared-status">
+                                                <i class="fas fa-globe"></i> 团队成员可编辑
+                                            </div>
+                                        </div>
+                                        <button class="btn">
+                                            <i class="fas fa-comments"></i> 评论
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="document-body">
+                                    <h2>项目概述</h2>
+                                    <p>这份文档旨在规范团队的产品开发流程和标准，确保产品质量和团队协作效率。所有团队成员应当遵循本文档中的规定，如有任何疑问或建议，请在评论中讨论。</p>
+                                    
+                                    <h2>开发流程</h2>
+                                    <p>我们采用<span class="comment-indicator">敏捷开发</span>方法，以两周为一个迭代周期，每个迭代包含以下环节：</p>
+                                    <ul>
+                                        <li>需求分析与规划 (1天)</li>
+                                        <li>设计与原型制作 (3天)</li>
+                                        <li>开发实现 (7天)</li>
+                                        <li>测试与修复 (2天)</li>
+                                        <li>回顾与总结 (1天)</li>
+                                    </ul>
+                                    
+                                    <h2>代码规范</h2>
+                                    <p>所有代码必须遵循团队统一的代码规范，主要包括：</p>
+                                    <ul>
+                                        <li>JavaScript/TypeScript 使用 ESLint 进行代码风格检查</li>
+                                        <li>CSS 使用 BEM 命名规范</li>
+                                        <li>提交前必须通过所有自动化测试</li>
+                                        <li>代码审核至少需要一位其他团队成员的批准</li>
+                                    </ul>
+                                    
+                                    <h2>设计规范</h2>
+                                    <p>产品设计需要遵循统一的<span class="comment-indicator">设计系统</span>，确保用户体验的一致性：</p>
+                                    <ul>
+                                        <li>颜色：使用预定义的调色板</li>
+                                        <li>排版：按照预设的字体、大小和行高</li>
+                                        <li>间距：遵循 8px 网格系统</li>
+                                        <li>组件：优先使用设计系统中的标准组件</li>
+                                    </ul>
+                                    
+                                    <h2>版本发布</h2>
+                                    <p>产品版本使用语义化版本号 (X.Y.Z)：</p>
+                                    <ul>
+                                        <li>X：重大更新，可能包含不兼容的 API 更改</li>
+                                        <li>Y：新功能，但保持向后兼容</li>
+                                        <li>Z：Bug 修复和小改进</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

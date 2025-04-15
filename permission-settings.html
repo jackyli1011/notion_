@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotionClone - 权限设置</title>
+    <!-- Ant Design CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f2f5;
+        }
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .prototype-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .prototype-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        .prototype-subtitle {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .prototype-section {
+            margin-bottom: 60px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            color: #1890ff;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #40a9ff;
+        }
+        .prototype {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .prototype-content {
+            padding: 20px;
+        }
+        .prototype-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1890ff;
+        }
+        /* 导航菜单样式 */
+        .nav-menu {
+            display: flex;
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        .nav-item {
+            padding: 10px 15px;
+            margin-right: 5px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            white-space: nowrap;
+        }
+        .nav-item:hover {
+            background-color: #f5f5f5;
+        }
+        .nav-item.active {
+            background-color: #1890ff;
+            color: white;
+        }
+        /* 权限设置页面样式 */
+        .workspace-layout {
+            display: flex;
+            height: 600px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 250px;
+            border-right: 1px solid #e8e8e8;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+        }
+        .workspace-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            background-color: #2EAADC;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .workspace-name {
+            font-weight: bold;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .sidebar-content {
+            flex: 1;
+            padding: 15px;
+            overflow: auto;
+        }
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+        .sidebar-section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 2px;
+            position: relative;
+        }
+        .sidebar-item:hover {
+            background-color: #f0f0f0;
+        }
+        .sidebar-item.active {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        .sidebar-item-icon {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+        .sidebar-item-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .sidebar-item-arrow {
+            display: none;
+            position: absolute;
+            right: 10px;
+            color: #999;
+            font-size: 12px;
+        }
+        .sidebar-item:hover .sidebar-item-arrow {
+            display: block;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .content-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+        }
+        .content-title {
+            font-size: 18px;
+            font-weight: bold;
+            flex: 1;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .content-body {
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+        }
+        /* 页面权限设置 */
+        .page-permission {
+            max-width: 720px;
+        }
+        .current-permission {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .permission-heading {
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .permission-heading i {
+            margin-right: 5px;
+            color: #1890ff;
+        }
+        .permission-status {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            color: #555;
+        }
+        .page-access-options {
+            margin-bottom: 30px;
+        }
+        .access-option {
+            padding: 15px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .access-option:hover {
+            background-color: #f9f9f9;
+        }
+        .access-option.selected {
+            border-color: #91d5ff;
+            background-color: #e6f7ff;
+        }
+        .access-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d9d9d9;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+        }
+        .access-option.selected .access-radio {
+            border-color: #1890ff;
+        }
+        .access-option.selected .access-radio:after {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #1890ff;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+        }
+        .access-info {
+            flex: 1;
+        }
+        .access-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .access-description {
+            font-size: 12px;
+            color: #666;
+        }
+        .access-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            margin-right: 15px;
+        }
+        .access-option.selected .access-icon {
+            background-color: #1890ff;
+            color: white;
+        }
+        .share-input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 8px 10px;
+        }
+        .share-input {
+            flex: 1;
+            border: none;
+            padding: 5px;
+            outline: none;
+        }
+        .share-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .members-with-access {
+            margin-top: 30px;
+        }
+        .section-header {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .member-access-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .member-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        .member-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #1890ff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        .member-details {
+            flex: 1;
+        }
+        .member-name {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        .member-role {
+            font-size: 12px;
+            color: #888;
+        }
+        .member-permission {
+            min-width: 120px;
+        }
+        .permission-select {
+            padding: 5px 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            min-width: 100px;
+        }
+        .member-actions {
+            width: 40px;
+            text-align: right;
+        }
+        .action-icon {
+            color: #999;
+            cursor: pointer;
+        }
+        .action-icon:hover {
+            color: #666;
+        }
+        /* 共享链接 */
+        .share-link-section {
+            margin-top: 40px;
+        }
+        .link-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background-color: #fafafa;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .link-info {
+            flex: 1;
+        }
+        .link-title {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        .link-url {
+            font-size: 12px;
+            color: #888;
+            word-break: break-all;
+        }
+        .link-permission {
+            min-width: 120px;
+            padding: 0 15px;
+        }
+        .link-action {
+            display: flex;
+            gap: 10px;
+        }
+        .link-action-btn {
+            color: #1890ff;
+            cursor: pointer;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            margin-left: 10px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #1890ff;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="prototype-header">
+            <div class="prototype-title">NotionClone 原型设计</div>
+            <div class="prototype-subtitle">工作空间管理、分区管理与团队协作权限系统</div>
+        </div>
+
+        <!-- 导航菜单 -->
+        <div class="nav-menu">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="workspace-list.html" class="nav-item">工作空间列表</a>
+            <a href="create-workspace.html" class="nav-item">创建工作空间</a>
+            <a href="workspace-settings.html" class="nav-item">工作空间设置</a>
+            <a href="private-space.html" class="nav-item">私人分区</a>
+            <a href="team-collaboration.html" class="nav-item">团队协作区</a>
+            <a href="team-members.html" class="nav-item">团队成员管理</a>
+            <a href="permission-settings.html" class="nav-item active">权限设置</a>
+        </div>
+
+        <div class="prototype-section">
+            <div class="section-title">权限设置</div>
+            <div class="prototype">
+                <div class="prototype-label">页面权限设置</div>
+                <div class="prototype-content">
+                    <div class="workspace-layout">
+                        <!-- 侧边栏 -->
+                        <div class="sidebar">
+                            <div class="sidebar-header">
+                                <div class="workspace-icon">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <div class="workspace-name">产品开发</div>
+                                <i class="fas fa-chevron-down" style="margin-left: 5px; color: #888; cursor: pointer;"></i>
+                            </div>
+                            <div class="sidebar-content">
+                                <div class="sidebar-section">
+                                    <div class="sidebar-section-title">页面权限</div>
+                                    <div class="sidebar-item active">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-file-alt"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">产品需求文档</div>
+                                        <div class="sidebar-item-arrow">
+                                            <i class="fas fa-angle-right"></i>
+                                        </div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-file-alt"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">开发规范</div>
+                                        <div class="sidebar-item-arrow">
+                                            <i class="fas fa-angle-right"></i>
+                                        </div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-tasks"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">项目看板</div>
+                                        <div class="sidebar-item-arrow">
+                                            <i class="fas fa-angle-right"></i>
+                                        </div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">团队日历</div>
+                                        <div class="sidebar-item-arrow">
+                                            <i class="fas fa-angle-right"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sidebar-section">
+                                    <div class="sidebar-section-title">区域权限</div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">团队协作区</div>
+                                        <div class="sidebar-item-arrow">
+                                            <i class="fas fa-angle-right"></i>
+                                        </div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-lock"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">私人分区</div>
+                                        <div class="sidebar-item-arrow">
+                                            <i class="fas fa-angle-right"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sidebar-section">
+                                    <div class="sidebar-section-title">工作空间权限</div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-user-shield"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">角色与权限</div>
+                                        <div class="sidebar-item-arrow">
+                                            <i class="fas fa-angle-right"></i>
+                                        </div>
+                                    </div>
+                                    <div class="sidebar-item">
+                                        <div class="sidebar-item-icon">
+                                            <i class="fas fa-link"></i>
+                                        </div>
+                                        <div class="sidebar-item-name">分享链接管理</div>
+                                        <div class="sidebar-item-arrow">
+                                            <i class="fas fa-angle-right"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 主内容区 -->
+                        <div class="main-content">
+                            <div class="content-header">
+                                <div class="content-title">产品需求文档 - 权限设置</div>
+                                <div class="header-actions">
+                                    <button class="btn">保存设置</button>
+                                </div>
+                            </div>
+                            <div class="content-body">
+                                <div class="page-permission">
+                                    <div class="current-permission">
+                                        <div class="permission-heading">
+                                            <i class="fas fa-lock"></i> 当前权限状态
+                                        </div>
+                                        <div class="permission-status">
+                                            <i class="fas fa-users" style="margin-right: 5px;"></i>
+                                            此页面对特定团队成员可编辑，部分成员只读
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="page-access-options">
+                                        <div class="section-header">页面访问权限</div>
+                                        
+                                        <div class="access-option">
+                                            <div class="access-radio"></div>
+                                            <div class="access-icon">
+                                                <i class="fas fa-link"></i>
+                                            </div>
+                                            <div class="access-info">
+                                                <div class="access-title">继承父级权限</div>
+                                                <div class="access-description">此页面将继承父级页面或区域的权限设置</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="access-option selected">
+                                            <div class="access-radio"></div>
+                                            <div class="access-icon">
+                                                <i class="fas fa-user-lock"></i>
+                                            </div>
+                                            <div class="access-info">
+                                                <div class="access-title">限制访问</div>
+                                                <div class="access-description">只有特定成员或角色可以访问</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="access-option">
+                                            <div class="access-radio"></div>
+                                            <div class="access-icon">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            <div class="access-info">
+                                                <div class="access-title">所有团队成员</div>
+                                                <div class="access-description">工作空间内所有成员都可以访问</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="access-option">
+                                            <div class="access-radio"></div>
+                                            <div class="access-icon">
+                                                <i class="fas fa-globe"></i>
+                                            </div>
+                                            <div class="access-info">
+                                                <div class="access-title">公开分享</div>
+                                                <div class="access-description">任何拥有链接的人都可以访问</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="share-input-group">
+                                        <i class="fas fa-user-plus" style="margin-right: 10px; color: #666;"></i>
+                                        <input type="text" class="share-input" placeholder="添加成员或邮箱地址...">
+                                        <div class="share-actions">
+                                            <select class="permission-select">
+                                                <option>可编辑</option>
+                                                <option>只读</option>
+                                                <option>完全权限</option>
+                                            </select>
+                                            <button class="btn">邀请</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="members-with-access">
+                                        <div class="section-header">
+                                            <span>已获得访问权限的成员</span>
+                                            <span style="font-size: 14px; font-weight: normal;">5 个成员</span>
+                                        </div>
+                                        
+                                        <div class="member-access-row">
+                                            <div class="member-info">
+                                                <div class="member-avatar">LW</div>
+                                                <div class="member-details">
+                                                    <div class="member-name">李伟</div>
+                                                    <div class="member-role">管理员</div>
+                                                </div>
+                                            </div>
+                                            <div class="member-permission">
+                                                <select class="permission-select">
+                                                    <option>完全权限</option>
+                                                    <option>可编辑</option>
+                                                    <option>只读</option>
+                                                    <option>无权限</option>
+                                                </select>
+                                            </div>
+                                            <div class="member-actions">
+                                                <i class="fas fa-ellipsis-h action-icon"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="member-access-row">
+                                            <div class="member-info">
+                                                <div class="member-avatar">ZS</div>
+                                                <div class="member-details">
+                                                    <div class="member-name">张三</div>
+                                                    <div class="member-role">编辑者</div>
+                                                </div>
+                                            </div>
+                                            <div class="member-permission">
+                                                <select class="permission-select">
+                                                    <option selected>可编辑</option>
+                                                    <option>完全权限</option>
+                                                    <option>只读</option>
+                                                    <option>无权限</option>
+                                                </select>
+                                            </div>
+                                            <div class="member-actions">
+                                                <i class="fas fa-ellipsis-h action-icon"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="member-access-row">
+                                            <div class="member-info">
+                                                <div class="member-avatar">CL</div>
+                                                <div class="member-details">
+                                                    <div class="member-name">陈丽</div>
+                                                    <div class="member-role">编辑者</div>
+                                                </div>
+                                            </div>
+                                            <div class="member-permission">
+                                                <select class="permission-select">
+                                                    <option>可编辑</option>
+                                                    <option>完全权限</option>
+                                                    <option selected>只读</option>
+                                                    <option>无权限</option>
+                                                </select>
+                                            </div>
+                                            <div class="member-actions">
+                                                <i class="fas fa-ellipsis-h action-icon"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="member-access-row">
+                                            <div class="member-info">
+                                                <div class="member-avatar">XY</div>
+                                                <div class="member-details">
+                                                    <div class="member-name">徐洋</div>
+                                                    <div class="member-role">只读</div>
+                                                </div>
+                                            </div>
+                                            <div class="member-permission">
+                                                <select class="permission-select">
+                                                    <option>可编辑</option>
+                                                    <option>完全权限</option>
+                                                    <option selected>只读</option>
+                                                    <option>无权限</option>
+                                                </select>
+                                            </div>
+                                            <div class="member-actions">
+                                                <i class="fas fa-ellipsis-h action-icon"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="member-access-row">
+                                            <div class="member-info">
+                                                <div class="member-avatar">WF</div>
+                                                <div class="member-details">
+                                                    <div class="member-name">王芳</div>
+                                                    <div class="member-role">编辑者</div>
+                                                </div>
+                                            </div>
+                                            <div class="member-permission">
+                                                <select class="permission-select">
+                                                    <option selected>可编辑</option>
+                                                    <option>完全权限</option>
+                                                    <option>只读</option>
+                                                    <option>无权限</option>
+                                                </select>
+                                            </div>
+                                            <div class="member-actions">
+                                                <i class="fas fa-ellipsis-h action-icon"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="share-link-section">
+                                        <div class="section-header">
+                                            <span>共享链接</span>
+                                            <button class="btn" style="font-size: 12px; padding: 5px 10px;">
+                                                <i class="fas fa-plus"></i> 创建链接
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="link-row">
+                                            <div class="link-info">
+                                                <div class="link-title">需求评审链接</div>
+                                                <div class="link-url">https://notionclone.com/share/products/req-123456</div>
+                                            </div>
+                                            <div class="link-permission">
+                                                <select class="permission-select">
+                                                    <option selected>只读</option>
+                                                    <option>可编辑</option>
+                                                </select>
+                                            </div>
+                                            <div class="link-action">
+                                                <div class="link-action-btn">复制</div>
+                                                <div class="link-action-btn" style="color: #ff4d4f;">删除</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="link-row">
+                                            <div class="link-info">
+                                                <div class="link-title">团队分享链接</div>
+                                                <div class="link-url">https://notionclone.com/share/products/team-789012</div>
+                                            </div>
+                                            <div class="link-permission">
+                                                <select class="permission-select">
+                                                    <option>只读</option>
+                                                    <option selected>可编辑</option>
+                                                </select>
+                                            </div>
+                                            <div class="link-action">
+                                                <div class="link-action-btn">复制</div>
+                                                <div class="link-action-btn" style="color: #ff4d4f;">删除</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="margin-top: 30px; border-top: 1px solid #f0f0f0; padding-top: 20px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                            <div style="font-weight: 500;">高级设置</div>
+                                        </div>
+                                        
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                            <div>
+                                                <div style="margin-bottom: 5px;">允许复制内容</div>
+                                                <div style="font-size: 12px; color: #666;">访问者是否可以复制此页面的内容</div>
+                                            </div>
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                            <div>
+                                                <div style="margin-bottom: 5px;">允许评论</div>
+                                                <div style="font-size: 12px; color: #666;">访问者是否可以在页面上添加评论</div>
+                                            </div>
+                                            <label class="switch">
+                                                <input type="checkbox" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <div style="margin-bottom: 5px;">搜索引擎索引</div>
+                                                <div style="font-size: 12px; color: #666;">允许搜索引擎索引此页面（仅对公开页面有效）</div>
+                                            </div>
+                                            <label class="switch">
+                                                <input type="checkbox">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

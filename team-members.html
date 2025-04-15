@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotionClone - 团队成员管理</title>
+    <!-- Ant Design CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f2f5;
+        }
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .prototype-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .prototype-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        .prototype-subtitle {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .prototype-section {
+            margin-bottom: 60px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            color: #1890ff;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #40a9ff;
+        }
+        .prototype {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .prototype-content {
+            padding: 20px;
+        }
+        .prototype-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1890ff;
+        }
+        /* 导航菜单样式 */
+        .nav-menu {
+            display: flex;
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        .nav-item {
+            padding: 10px 15px;
+            margin-right: 5px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            white-space: nowrap;
+        }
+        .nav-item:hover {
+            background-color: #f5f5f5;
+        }
+        .nav-item.active {
+            background-color: #1890ff;
+            color: white;
+        }
+        /* 团队成员管理样式 */
+        .team-container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            display: flex;
+            width: 300px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 14px;
+        }
+        .search-btn {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        .filter-box {
+            display: flex;
+            gap: 10px;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            background-color: #f5f5f5;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .filter-btn i {
+            margin-right: 5px;
+        }
+        .member-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .member-table th {
+            text-align: left;
+            padding: 12px 15px;
+            background-color: #fafafa;
+            border-bottom: 1px solid #e8e8e8;
+            font-weight: 500;
+            color: #666;
+        }
+        .member-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .member-table tr:hover {
+            background-color: #fafafa;
+        }
+        .member-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #1890ff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+        .member-info {
+            display: flex;
+            align-items: center;
+        }
+        .member-details {
+            margin-left: 10px;
+        }
+        .member-name {
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        .member-email {
+            font-size: 12px;
+            color: #666;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        .role-badge.admin {
+            background-color: #fff2e8;
+            color: #fa8c16;
+        }
+        .role-badge.member {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        .role-badge.guest {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            padding: 4px 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        .action-btn.edit {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+        .action-btn.delete {
+            color: #ff4d4f;
+            border-color: #ff4d4f;
+        }
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+        .invite-card {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        .invite-header {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        .invite-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .invite-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .select-role {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            width: 120px;
+        }
+        .pending-invites {
+            margin-top: 30px;
+        }
+        .pending-invite-header {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .invite-count {
+            background-color: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        .tab-menu {
+            display: flex;
+            border-bottom: 1px solid #e8e8e8;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            color: #1890ff;
+            border-bottom-color: #1890ff;
+        }
+        /* 权限设置卡片 */
+        .permission-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .permission-header {
+            padding: 15px;
+            background-color: #fafafa;
+            border-bottom: 1px solid #e8e8e8;
+            font-weight: 500;
+        }
+        .permission-body {
+            padding: 15px;
+        }
+        .permission-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .permission-item:last-child {
+            border-bottom: none;
+        }
+        .permission-name {
+            font-size: 14px;
+        }
+        .permission-desc {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #1890ff;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="prototype-header">
+            <div class="prototype-title">NotionClone 原型设计</div>
+            <div class="prototype-subtitle">工作空间管理、分区管理与团队协作权限系统</div>
+        </div>
+
+        <!-- 导航菜单 -->
+        <div class="nav-menu">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="workspace-list.html" class="nav-item">工作空间列表</a>
+            <a href="create-workspace.html" class="nav-item">创建工作空间</a>
+            <a href="workspace-settings.html" class="nav-item">工作空间设置</a>
+            <a href="private-space.html" class="nav-item">私人分区</a>
+            <a href="team-collaboration.html" class="nav-item">团队协作区</a>
+            <a href="team-members.html" class="nav-item active">团队成员管理</a>
+            <a href="permission-settings.html" class="nav-item">权限设置</a>
+        </div>
+
+        <div class="prototype-section">
+            <div class="section-title">团队成员管理</div>
+            <div class="prototype">
+                <div class="prototype-label">成员列表</div>
+                <div class="prototype-content">
+                    <div class="team-container">
+                        <div class="tab-menu">
+                            <div class="tab active">成员管理</div>
+                            <div class="tab">权限设置</div>
+                            <div class="tab">邀请记录</div>
+                        </div>
+                        
+                        <div class="header-actions">
+                            <div class="search-bar">
+                                <input type="text" class="search-input" placeholder="搜索成员...">
+                                <button class="search-btn"><i class="fas fa-search"></i></button>
+                            </div>
+                            <div class="filter-box">
+                                <div class="filter-btn">
+                                    <i class="fas fa-filter"></i> 筛选
+                                </div>
+                                <div class="filter-btn">
+                                    <i class="fas fa-sort"></i> 排序
+                                </div>
+                                <button class="btn">
+                                    <i class="fas fa-user-plus"></i> 邀请成员
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <table class="member-table">
+                            <thead>
+                                <tr>
+                                    <th>成员</th>
+                                    <th>角色</th>
+                                    <th>加入时间</th>
+                                    <th>访问权限</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="member-info">
+                                            <div class="member-avatar">LW</div>
+                                            <div class="member-details">
+                                                <div class="member-name">李伟</div>
+                                                <div class="member-email">liwei@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge admin">管理员</span></td>
+                                    <td>2023-08-15</td>
+                                    <td>全部权限</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">编辑</button>
+                                            <button class="action-btn delete">移除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="member-info">
+                                            <div class="member-avatar">ZS</div>
+                                            <div class="member-details">
+                                                <div class="member-name">张三</div>
+                                                <div class="member-email">zhangsan@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge member">编辑者</span></td>
+                                    <td>2023-08-20</td>
+                                    <td>可编辑</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">编辑</button>
+                                            <button class="action-btn delete">移除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="member-info">
+                                            <div class="member-avatar">CL</div>
+                                            <div class="member-details">
+                                                <div class="member-name">陈丽</div>
+                                                <div class="member-email">chenli@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge member">编辑者</span></td>
+                                    <td>2023-08-25</td>
+                                    <td>可编辑</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">编辑</button>
+                                            <button class="action-btn delete">移除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="member-info">
+                                            <div class="member-avatar">XY</div>
+                                            <div class="member-details">
+                                                <div class="member-name">徐洋</div>
+                                                <div class="member-email">xuyang@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge guest">只读</span></td>
+                                    <td>2023-09-01</td>
+                                    <td>只能查看</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">编辑</button>
+                                            <button class="action-btn delete">移除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="member-info">
+                                            <div class="member-avatar">WF</div>
+                                            <div class="member-details">
+                                                <div class="member-name">王芳</div>
+                                                <div class="member-email">wangfang@example.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="role-badge member">编辑者</span></td>
+                                    <td>2023-09-05</td>
+                                    <td>可编辑</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn edit">编辑</button>
+                                            <button class="action-btn delete">移除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="invite-card">
+                            <div class="invite-header">邀请新成员</div>
+                            <div class="invite-form">
+                                <input type="text" class="invite-input" placeholder="输入邮箱地址...">
+                                <select class="select-role">
+                                    <option value="member">编辑者</option>
+                                    <option value="admin">管理员</option>
+                                    <option value="guest">只读</option>
+                                </select>
+                                <button class="btn">发送邀请</button>
+                            </div>
+                        </div>
+                        
+                        <div class="pending-invites">
+                            <div class="pending-invite-header">
+                                <div>待处理邀请</div>
+                                <div class="invite-count">2</div>
+                            </div>
+                            
+                            <table class="member-table">
+                                <thead>
+                                    <tr>
+                                        <th>邮箱</th>
+                                        <th>角色</th>
+                                        <th>邀请日期</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>zhaoliu@example.com</td>
+                                        <td><span class="role-badge member">编辑者</span></td>
+                                        <td>2023-09-10</td>
+                                        <td>等待接受</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="action-btn">重新发送</button>
+                                                <button class="action-btn delete">取消</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>sunqi@example.com</td>
+                                        <td><span class="role-badge guest">只读</span></td>
+                                        <td>2023-09-11</td>
+                                        <td>等待接受</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="action-btn">重新发送</button>
+                                                <button class="action-btn delete">取消</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 权限设置选项卡 -->
+            <div class="prototype">
+                <div class="prototype-label">权限设置</div>
+                <div class="prototype-content">
+                    <div class="team-container">
+                        <div class="tab-menu">
+                            <div class="tab">成员管理</div>
+                            <div class="tab active">权限设置</div>
+                            <div class="tab">邀请记录</div>
+                        </div>
+                        
+                        <!-- 权限卡片：角色权限 -->
+                        <div class="permission-card">
+                            <div class="permission-header">角色权限设置</div>
+                            <div class="permission-body">
+                                <div class="permission-item">
+                                    <div>
+                                        <div class="permission-name">管理员</div>
+                                        <div class="permission-desc">可以管理成员、修改设置、删除内容</div>
+                                    </div>
+                                    <div>
+                                        <span style="color: #888;">内置角色</span>
+                                    </div>
+                                </div>
+                                <div class="permission-item">
+                                    <div>
+                                        <div class="permission-name">编辑者</div>
+                                        <div class="permission-desc">可以创建、编辑和删除内容</div>
+                                    </div>
+                                    <button class="action-btn edit">编辑权限</button>
+                                </div>
+                                <div class="permission-item">
+                                    <div>
+                                        <div class="permission-name">只读</div>
+                                        <div class="permission-desc">只能查看内容，不能编辑</div>
+                                    </div>
+                                    <button class="action-btn edit">编辑权限</button>
+                                </div>
+                                <div style="margin-top: 15px;">
+                                    <button class="btn" style="background-color: white; color: #1890ff; border: 1px solid #1890ff;">
+                                        <i class="fas fa-plus"></i> 创建自定义角色
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 权限卡片：通用设置 -->
+                        <div class="permission-card">
+                            <div class="permission-header">通用权限设置</div>
+                            <div class="permission-body">
+                                <div class="permission-item">
+                                    <div>
+                                        <div class="permission-name">允许成员邀请新用户</div>
+                                        <div class="permission-desc">非管理员成员是否可以邀请其他人加入工作空间</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <div>
+                                        <div class="permission-name">允许成员创建公开链接</div>
+                                        <div class="permission-desc">成员是否可以创建可公开访问的分享链接</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <div>
+                                        <div class="permission-name">默认页面权限</div>
+                                        <div class="permission-desc">新创建页面的默认访问权限</div>
+                                    </div>
+                                    <select class="select-role" style="padding: 6px 10px;">
+                                        <option>继承父级权限</option>
+                                        <option>仅创建者可编辑</option>
+                                        <option>所有成员可编辑</option>
+                                        <option>所有成员可查看</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 权限卡片：高级设置 -->
+                        <div class="permission-card">
+                            <div class="permission-header">高级权限设置</div>
+                            <div class="permission-body">
+                                <div class="permission-item">
+                                    <div>
+                                        <div class="permission-name">强制登录访问</div>
+                                        <div class="permission-desc">所有访问都需要登录，包括外部分享链接</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <div>
+                                        <div class="permission-name">域名限制</div>
+                                        <div class="permission-desc">限制只有特定域名的邮箱可以加入</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <div>
+                                        <div class="permission-name">IP 访问限制</div>
+                                        <div class="permission-desc">限制只有特定 IP 地址可以访问</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: right;">
+                            <button class="btn">保存设置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

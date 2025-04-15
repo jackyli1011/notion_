@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotionClone - 创建工作空间</title>
+    <!-- Ant Design CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f2f5;
+        }
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .prototype-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .prototype-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        .prototype-subtitle {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .prototype-section {
+            margin-bottom: 60px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            color: #1890ff;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #40a9ff;
+        }
+        .prototype {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .prototype-content {
+            padding: 20px;
+        }
+        .prototype-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1890ff;
+        }
+        /* 导航菜单样式 */
+        .nav-menu {
+            display: flex;
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        .nav-item {
+            padding: 10px 15px;
+            margin-right: 5px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            white-space: nowrap;
+        }
+        .nav-item:hover {
+            background-color: #f5f5f5;
+        }
+        .nav-item.active {
+            background-color: #1890ff;
+            color: white;
+        }
+        /* 表单样式 */
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 100px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        .form-textarea:focus {
+            outline: none;
+            border-color: #40a9ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        .form-help {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        /* 图标选择器样式 */
+        .icon-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .icon-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .icon-option:hover {
+            transform: scale(1.05);
+        }
+        .icon-option.selected {
+            box-shadow: 0 0 0 2px #1890ff;
+        }
+        /* 颜色选择器样式 */
+        .color-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.selected {
+            box-shadow: 0 0 0 2px #1890ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="prototype-header">
+            <div class="prototype-title">NotionClone 原型设计</div>
+            <div class="prototype-subtitle">工作空间管理、分区管理与团队协作权限系统</div>
+        </div>
+
+        <!-- 导航菜单 -->
+        <div class="nav-menu">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="workspace-list.html" class="nav-item">工作空间列表</a>
+            <a href="create-workspace.html" class="nav-item active">创建工作空间</a>
+            <a href="workspace-settings.html" class="nav-item">工作空间设置</a>
+            <a href="private-space.html" class="nav-item">私人分区</a>
+            <a href="team-collaboration.html" class="nav-item">团队协作区</a>
+            <a href="team-members.html" class="nav-item">团队成员管理</a>
+            <a href="permission-settings.html" class="nav-item">权限设置</a>
+        </div>
+
+        <div class="prototype-section">
+            <div class="section-title">创建工作空间</div>
+            <div class="prototype">
+                <div class="prototype-label">工作空间创建表单</div>
+                <div class="prototype-content">
+                    <div class="form-container">
+                        <div class="form-group">
+                            <div class="form-label">工作空间名称</div>
+                            <div class="form-description">请为您的工作空间取一个名称，用来在工作空间列表中显示</div>
+                            <input type="text" class="form-input" placeholder="例如：产品开发、市场营销、人力资源...">
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-label">描述（可选）</div>
+                            <div class="form-description">简要描述此工作空间的用途和目标</div>
+                            <textarea class="form-textarea" placeholder="例如：用于团队项目管理和文档协作的工作空间..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-label">选择图标</div>
+                            <div class="form-description">为您的工作空间选择一个图标</div>
+                            <div class="icon-selector">
+                                <div class="icon-option selected" style="background-color: #1890ff;">
+                                    <i class="fas fa-rocket"></i>
+                                </div>
+                                <div class="icon-option" style="background-color: #7356BF;">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="icon-option" style="background-color: #F2994A;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="icon-option" style="background-color: #EB5757;">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="icon-option" style="background-color: #219653;">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <div class="icon-option" style="background-color: #2F80ED;">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="icon-option" style="background-color: #9B51E0;">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <div class="icon-option" style="background-color: #2EAADC;">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-label">选择颜色</div>
+                            <div class="form-description">为您的工作空间选择一个主题色</div>
+                            <div class="color-selector">
+                                <div class="color-option selected" style="background-color: #1890ff;"></div>
+                                <div class="color-option" style="background-color: #7356BF;"></div>
+                                <div class="color-option" style="background-color: #F2994A;"></div>
+                                <div class="color-option" style="background-color: #EB5757;"></div>
+                                <div class="color-option" style="background-color: #219653;"></div>
+                                <div class="color-option" style="background-color: #2F80ED;"></div>
+                                <div class="color-option" style="background-color: #9B51E0;"></div>
+                                <div class="color-option" style="background-color: #2EAADC;"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-label">工作空间网址</div>
+                            <div class="form-description">设置工作空间的唯一网址</div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="flex-shrink: 0; padding: 10px; background-color: #f5f5f5; border: 1px solid #d9d9d9; border-right: none; border-radius: 4px 0 0 4px;">
+                                    notion-clone.com/
+                                </div>
+                                <input type="text" class="form-input" style="border-radius: 0 4px 4px 0;" placeholder="your-workspace-name">
+                            </div>
+                            <div class="form-help">仅允许使用字母、数字和短横线</div>
+                        </div>
+
+                        <div class="btn-container">
+                            <a href="workspace-list.html" style="margin-right: 10px; color: #666; text-decoration: none;">取消</a>
+                            <a href="workspace-list.html" class="btn">创建工作空间</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

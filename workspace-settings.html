@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotionClone - 工作空间设置</title>
+    <!-- Ant Design CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.16.13/antd.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f0f2f5;
+        }
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .prototype-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .prototype-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        .prototype-subtitle {
+            font-size: 16px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .prototype-section {
+            margin-bottom: 60px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            color: #1890ff;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #40a9ff;
+        }
+        .btn-danger {
+            background-color: #ff4d4f;
+        }
+        .btn-danger:hover {
+            background-color: #ff7875;
+        }
+        .btn-warning {
+            background-color: #faad14;
+        }
+        .btn-warning:hover {
+            background-color: #ffc53d;
+        }
+        .prototype {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .prototype-content {
+            padding: 20px;
+        }
+        .prototype-label {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #1890ff;
+        }
+        /* 导航菜单样式 */
+        .nav-menu {
+            display: flex;
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        .nav-item {
+            padding: 10px 15px;
+            margin-right: 5px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            white-space: nowrap;
+        }
+        .nav-item:hover {
+            background-color: #f5f5f5;
+        }
+        .nav-item.active {
+            background-color: #1890ff;
+            color: white;
+        }
+        /* 工作空间设置布局 */
+        .settings-layout {
+            display: flex;
+            min-height: 600px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .settings-sidebar {
+            width: 250px;
+            border-right: 1px solid #e8e8e8;
+            background-color: #f9f9f9;
+        }
+        .settings-main {
+            flex: 1;
+            padding: 20px 30px;
+            overflow: auto;
+        }
+        .settings-header {
+            margin-bottom: 30px;
+        }
+        .settings-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .settings-description {
+            color: #666;
+            font-size: 14px;
+        }
+        /* 设置侧边栏 */
+        .sidebar-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar-item:hover {
+            background-color: #f0f0f0;
+        }
+        .sidebar-item.active {
+            background-color: #e6f7ff;
+            color: #1890ff;
+            border-right: 3px solid #1890ff;
+        }
+        .sidebar-item i {
+            margin-right: 10px;
+            width: 16px;
+            text-align: center;
+        }
+        /* 表单样式 */
+        .form-section {
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: #40a9ff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        /* 切换开关 */
+        .toggle-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .toggle-label {
+            flex: 1;
+        }
+        .toggle-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .toggle-description {
+            font-size: 12px;
+            color: #666;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #1890ff;
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        /* 工作空间图标选择 */
+        .icon-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .icon-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            color: #333;
+            transition: all 0.3s;
+        }
+        .icon-option:hover {
+            background-color: #e6f7ff;
+            color: #1890ff;
+        }
+        .icon-option.selected {
+            background-color: #1890ff;
+            color: white;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        /* 颜色选择器 */
+        .color-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s;
+            position: relative;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.selected::after {
+            content: "✓";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        }
+        /* 危险区域 */
+        .danger-zone {
+            margin-top: 40px;
+            padding: 20px;
+            border: 1px solid #ff4d4f;
+            border-radius: 4px;
+            background-color: #fff1f0;
+        }
+        .danger-zone-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff4d4f;
+            margin-bottom: 15px;
+        }
+        .danger-action {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 77, 79, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .danger-action:last-child {
+            border-bottom: none;
+        }
+        .danger-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        .danger-description {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="prototype-header">
+            <div class="prototype-title">NotionClone 原型设计</div>
+            <div class="prototype-subtitle">工作空间管理、分区管理与团队协作权限系统</div>
+        </div>
+
+        <!-- 导航菜单 -->
+        <div class="nav-menu">
+            <a href="index.html" class="nav-item">首页</a>
+            <a href="workspace-list.html" class="nav-item">工作空间列表</a>
+            <a href="create-workspace.html" class="nav-item">创建工作空间</a>
+            <a href="workspace-settings.html" class="nav-item active">工作空间设置</a>
+            <a href="private-space.html" class="nav-item">私人分区</a>
+            <a href="team-collaboration.html" class="nav-item">团队协作区</a>
+            <a href="team-members.html" class="nav-item">团队成员管理</a>
+            <a href="permission-settings.html" class="nav-item">权限设置</a>
+        </div>
+
+        <div class="prototype-section">
+            <div class="section-title">工作空间设置</div>
+            <div class="prototype">
+                <div class="prototype-label">设置页面界面</div>
+                <div class="prototype-content">
+                    <div class="settings-layout">
+                        <!-- 设置侧边栏 -->
+                        <div class="settings-sidebar">
+                            <div class="sidebar-item active">
+                                <i class="fas fa-info-circle"></i> 基本信息
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-users"></i> 团队成员
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-lock"></i> 权限设置
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-paint-brush"></i> 外观定制
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-bell"></i> 通知设置
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-exchange-alt"></i> 导入导出
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-toggle-on"></i> 功能开关
+                            </div>
+                        </div>
+                        
+                        <!-- 设置主内容区 -->
+                        <div class="settings-main">
+                            <div class="settings-header">
+                                <div class="settings-title">基本信息</div>
+                                <div class="settings-description">修改工作空间的名称、描述、图标和访问地址</div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <!-- 工作空间名称 -->
+                                <div class="form-group">
+                                    <label class="form-label">工作空间名称</label>
+                                    <input type="text" class="form-input" value="产品开发" placeholder="输入工作空间名称">
+                                    <div class="form-hint">这将显示在所有成员的界面中</div>
+                                </div>
+                                
+                                <!-- 工作空间描述 -->
+                                <div class="form-group">
+                                    <label class="form-label">工作空间描述</label>
+                                    <textarea class="form-textarea" placeholder="描述这个工作空间的用途">产品开发团队的协作空间，包含产品规划、设计文档和开发任务管理。</textarea>
+                                    <div class="form-hint">简洁描述工作空间的用途，帮助团队成员理解</div>
+                                </div>
+                                
+                                <!-- 工作空间图标 -->
+                                <div class="form-group">
+                                    <label class="form-label">工作空间图标</label>
+                                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                        <div style="width: 50px; height: 50px; background-color: #2EAADC; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: white; margin-right: 15px;">
+                                            <i class="fas fa-code" style="font-size: 24px;"></i>
+                                        </div>
+                                        <div>
+                                            <button class="btn" style="background-color: #f5f5f5; color: #333; margin-right: 10px;">
+                                                <i class="fas fa-upload"></i> 上传图片
+                                            </button>
+                                            <button class="btn" style="background-color: #f5f5f5; color: #333;">
+                                                <i class="fas fa-random"></i> 随机生成
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <label class="form-label">选择图标</label>
+                                    <div class="icon-selector">
+                                        <div class="icon-option selected"><i class="fas fa-code"></i></div>
+                                        <div class="icon-option"><i class="fas fa-coffee"></i></div>
+                                        <div class="icon-option"><i class="fas fa-brain"></i></div>
+                                        <div class="icon-option"><i class="fas fa-lightbulb"></i></div>
+                                        <div class="icon-option"><i class="fas fa-rocket"></i></div>
+                                        <div class="icon-option"><i class="fas fa-project-diagram"></i></div>
+                                        <div class="icon-option"><i class="fas fa-layer-group"></i></div>
+                                        <div class="icon-option"><i class="fas fa-cube"></i></div>
+                                    </div>
+                                    
+                                    <label class="form-label" style="margin-top: 15px;">图标背景色</label>
+                                    <div class="color-selector">
+                                        <div class="color-option selected" style="background-color: #2EAADC;"></div>
+                                        <div class="color-option" style="background-color: #15AABF;"></div>
+                                        <div class="color-option" style="background-color: #37B24D;"></div>
+                                        <div class="color-option" style="background-color: #F59F00;"></div>
+                                        <div class="color-option" style="background-color: #F76707;"></div>
+                                        <div class="color-option" style="background-color: #E03131;"></div>
+                                        <div class="color-option" style="background-color: #AE3EC9;"></div>
+                                        <div class="color-option" style="background-color: #7048E8;"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 自定义网址 -->
+                                <div class="form-group">
+                                    <label class="form-label">自定义网址</label>
+                                    <div style="display: flex; align-items: center;">
+                                        <span style="margin-right: 5px; color: #666;">notionclone.com/</span>
+                                        <input type="text" class="form-input" value="product-dev" placeholder="输入自定义网址">
+                                    </div>
+                                    <div class="form-hint">创建一个容易记忆的网址，方便团队成员访问</div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 20px;">
+                                <button class="btn">保存更改</button>
+                                <button class="btn" style="background-color: white; color: #333; border: 1px solid #d9d9d9; margin-left: 10px;">取消</button>
+                            </div>
+                            
+                            <!-- 危险区域 -->
+                            <div class="danger-zone">
+                                <div class="danger-zone-header">危险操作区</div>
+                                
+                                <div class="danger-action">
+                                    <div>
+                                        <div class="danger-title">删除所有内容</div>
+                                        <div class="danger-description">清空工作空间中的所有文档、笔记和文件，但保留工作空间结构</div>
+                                    </div>
+                                    <button class="btn btn-warning">删除内容</button>
+                                </div>
+                                
+                                <div class="danger-action">
+                                    <div>
+                                        <div class="danger-title">转移所有权</div>
+                                        <div class="danger-description">将工作空间的所有权转移给其他成员</div>
+                                    </div>
+                                    <button class="btn" style="background-color: #faad14; color: white;">转移所有权</button>
+                                </div>
+                                
+                                <div class="danger-action">
+                                    <div>
+                                        <div class="danger-title">删除工作空间</div>
+                                        <div class="danger-description">永久删除整个工作空间及其所有内容，此操作无法撤销</div>
+                                    </div>
+                                    <button class="btn btn-danger">删除工作空间</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 功能开关页面 -->
+            <div class="prototype">
+                <div class="prototype-label">功能开关设置</div>
+                <div class="prototype-content">
+                    <div class="settings-layout">
+                        <!-- 设置侧边栏 -->
+                        <div class="settings-sidebar">
+                            <div class="sidebar-item">
+                                <i class="fas fa-info-circle"></i> 基本信息
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-users"></i> 团队成员
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-lock"></i> 权限设置
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-paint-brush"></i> 外观定制
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-bell"></i> 通知设置
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-exchange-alt"></i> 导入导出
+                            </div>
+                            <div class="sidebar-item active">
+                                <i class="fas fa-toggle-on"></i> 功能开关
+                            </div>
+                        </div>
+                        
+                        <!-- 设置主内容区 -->
+                        <div class="settings-main">
+                            <div class="settings-header">
+                                <div class="settings-title">功能开关</div>
+                                <div class="settings-description">启用或禁用工作空间的特定功能</div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <!-- 启用评论功能 -->
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">启用评论功能</div>
+                                        <div class="toggle-description">允许成员在文档中添加评论和讨论</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <!-- 实时协作编辑 -->
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">实时协作编辑</div>
+                                        <div class="toggle-description">允许多位成员同时编辑同一文档，实时看到彼此的更改</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <!-- 允许访客访问 -->
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">允许访客访问</div>
+                                        <div class="toggle-description">允许非工作空间成员通过链接访问特定内容</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <!-- 其他功能开关 -->
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">文档版本历史</div>
+                                        <div class="toggle-description">保存文档的编辑历史，允许查看和恢复旧版本</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">AI 辅助功能</div>
+                                        <div class="toggle-description">启用 AI 辅助写作、总结和内容生成功能</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">自动保存</div>
+                                        <div class="toggle-description">自动保存编辑中的文档，防止意外丢失内容</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">集成第三方服务</div>
+                                        <div class="toggle-description">允许与 Google Drive、Dropbox 等第三方服务集成</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 20px;">
+                                <button class="btn">保存设置</button>
+                                <button class="btn" style="background-color: white; color: #333; border: 1px solid #d9d9d9; margin-left: 10px;">重置为默认</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 权限设置页面 -->
+            <div class="prototype">
+                <div class="prototype-label">权限设置界面</div>
+                <div class="prototype-content">
+                    <div class="settings-layout">
+                        <!-- 设置侧边栏 -->
+                        <div class="settings-sidebar">
+                            <div class="sidebar-item">
+                                <i class="fas fa-info-circle"></i> 基本信息
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-users"></i> 团队成员
+                            </div>
+                            <div class="sidebar-item active">
+                                <i class="fas fa-lock"></i> 权限设置
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-paint-brush"></i> 外观定制
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-bell"></i> 通知设置
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-exchange-alt"></i> 导入导出
+                            </div>
+                            <div class="sidebar-item">
+                                <i class="fas fa-toggle-on"></i> 功能开关
+                            </div>
+                        </div>
+                        
+                        <!-- 设置主内容区 -->
+                        <div class="settings-main">
+                            <div class="settings-header">
+                                <div class="settings-title">权限设置</div>
+                                <div class="settings-description">管理工作空间的访问权限、内容共享和安全设置</div>
+                            </div>
+                            
+                            <!-- 工作空间访问级别 -->
+                            <div class="form-section">
+                                <h3 style="margin-bottom: 20px; font-size: 16px;">工作空间访问级别</h3>
+                                
+                                <div style="background-color: #f9f9f9; border: 1px solid #eee; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
+                                    <div style="display: flex; align-items: start; margin-bottom: 10px;">
+                                        <div style="margin-right: 15px;">
+                                            <input type="radio" id="private" name="access_level" checked>
+                                        </div>
+                                        <div>
+                                            <label for="private" style="font-weight: 500; display: block; margin-bottom: 4px;">私密工作空间</label>
+                                            <div style="font-size: 13px; color: #666;">仅邀请的成员可以访问此工作空间及其内容</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; align-items: start; margin-bottom: 10px;">
+                                        <div style="margin-right: 15px;">
+                                            <input type="radio" id="restricted" name="access_level">
+                                        </div>
+                                        <div>
+                                            <label for="restricted" style="font-weight: 500; display: block; margin-bottom: 4px;">限制性工作空间</label>
+                                            <div style="font-size: 13px; color: #666;">允许特定人员查看，但仅邀请的成员可以编辑内容</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; align-items: start;">
+                                        <div style="margin-right: 15px;">
+                                            <input type="radio" id="public" name="access_level">
+                                        </div>
+                                        <div>
+                                            <label for="public" style="font-weight: 500; display: block; margin-bottom: 4px;">公开工作空间</label>
+                                            <div style="font-size: 13px; color: #666;">任何人都可以查看，但仅特定成员可以编辑内容</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 默认内容权限 -->
+                            <div class="form-section">
+                                <h3 style="margin-bottom: 20px; font-size: 16px;">默认内容权限</h3>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">新创建内容的默认权限</label>
+                                    <select class="form-select">
+                                        <option value="private">仅创建者可访问</option>
+                                        <option value="team" selected>团队成员可访问</option>
+                                        <option value="workspace">所有工作空间成员可访问</option>
+                                    </select>
+                                    <div class="form-hint">这将应用于所有新创建的页面、文档和数据库</div>
+                                </div>
+                                
+                                <div style="margin-top: 20px;">
+                                    <div class="toggle-container">
+                                        <div class="toggle-label">
+                                            <div class="toggle-title">允许成员分享内容</div>
+                                            <div class="toggle-description">允许团队成员将内容分享给工作空间外的人员</div>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="toggle-container">
+                                        <div class="toggle-label">
+                                            <div class="toggle-title">需要审核外部分享</div>
+                                            <div class="toggle-description">管理员需要审核并批准成员分享给外部人员的请求</div>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="toggle-container">
+                                        <div class="toggle-label">
+                                            <div class="toggle-title">禁止复制导出敏感内容</div>
+                                            <div class="toggle-description">阻止成员复制或导出标记为敏感的内容</div>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 角色权限设置 -->
+                            <div class="form-section">
+                                <h3 style="margin-bottom: 20px; font-size: 16px;">角色权限配置</h3>
+                                
+                                <div style="border: 1px solid #eee; border-radius: 4px; overflow: hidden; margin-bottom: 20px;">
+                                    <table style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background-color: #f5f5f5; text-align: left;">
+                                                <th style="padding: 12px 15px; font-weight: 500;">权限</th>
+                                                <th style="padding: 12px 15px; font-weight: 500;">管理员</th>
+                                                <th style="padding: 12px 15px; font-weight: 500;">编辑者</th>
+                                                <th style="padding: 12px 15px; font-weight: 500;">评论者</th>
+                                                <th style="padding: 12px 15px; font-weight: 500;">查看者</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="border-top: 1px solid #eee;">
+                                                <td style="padding: 12px 15px;">查看内容</td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #eee;">
+                                                <td style="padding: 12px 15px;">添加评论</td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #eee;">
+                                                <td style="padding: 12px 15px;">编辑内容</td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #eee;">
+                                                <td style="padding: 12px 15px;">创建新内容</td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #eee;">
+                                                <td style="padding: 12px 15px;">邀请新成员</td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #eee;">
+                                                <td style="padding: 12px 15px;">管理成员权限</td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #eee;">
+                                                <td style="padding: 12px 15px;">删除内容</td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                            </tr>
+                                            <tr style="border-top: 1px solid #eee;">
+                                                <td style="padding: 12px 15px;">导出内容</td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-check" style="color: #52c41a;"></i></td>
+                                                <td style="padding: 12px 15px;"><i class="fas fa-times" style="color: #ff4d4f;"></i></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="form-hint" style="margin-bottom: 20px;">默认角色权限配置，可以通过点击单元格更改特定角色的权限</div>
+                                
+                                <button class="btn" style="background-color: white; color: #333; border: 1px solid #d9d9d9;">
+                                    <i class="fas fa-plus"></i> 创建自定义角色
+                                </button>
+                            </div>
+                            
+                            <!-- 访客设置 -->
+                            <div class="form-section">
+                                <h3 style="margin-bottom: 20px; font-size: 16px;">访客设置</h3>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">允许链接共享</div>
+                                        <div class="toggle-description">允许通过链接与未注册用户分享内容</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">访客链接过期</div>
+                                        <div class="toggle-description">共享链接在一段时间后自动失效</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">访客链接默认过期时间</label>
+                                    <select class="form-select">
+                                        <option value="1">1 天</option>
+                                        <option value="7" selected>7 天</option>
+                                        <option value="30">30 天</option>
+                                        <option value="90">90 天</option>
+                                        <option value="never">永不过期</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">访客需要登录查看</div>
+                                        <div class="toggle-description">要求访客使用邮箱登录后才能查看分享内容</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- 安全设置 -->
+                            <div class="form-section">
+                                <h3 style="margin-bottom: 20px; font-size: 16px;">安全设置</h3>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">IP 地址限制</div>
+                                        <div class="toggle-description">限制只能从特定 IP 地址范围访问工作空间</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">双因素认证</div>
+                                        <div class="toggle-description">要求所有成员启用双因素认证以提高安全性</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">内容水印</div>
+                                        <div class="toggle-description">在所有页面上添加水印以防止未授权截图</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="toggle-container">
+                                    <div class="toggle-label">
+                                        <div class="toggle-title">会话超时</div>
+                                        <div class="toggle-description">一段时间无活动后自动登出用户</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 20px;">
+                                <button class="btn">保存权限设置</button>
+                                <button class="btn" style="background-color: white; color: #333; border: 1px solid #d9d9d9; margin-left: 10px;">重置为默认</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
